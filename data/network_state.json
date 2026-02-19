@@ -1,0 +1,68 @@
+{
+  "discovered_hosts": {
+    "192.168.100.35": {
+      "mac": "00:00:94:00:83:00",
+      "vendor": "Asante Technologies"
+    }
+  },
+  "fingerprints": {
+    "192.168.100.35": {
+      "ip": "192.168.100.35",
+      "ports": {
+        "22": {
+          "state": "filtered",
+          "protocol": "tcp",
+          "service": "ssh",
+          "version": ""
+        },
+        "23": {
+          "state": "filtered",
+          "protocol": "tcp",
+          "service": "telnet",
+          "version": ""
+        },
+        "80": {
+          "state": "filtered",
+          "protocol": "tcp",
+          "service": "http",
+          "version": ""
+        },
+        "443": {
+          "state": "filtered",
+          "protocol": "tcp",
+          "service": "https",
+          "version": ""
+        },
+        "502": {
+          "state": "filtered",
+          "protocol": "tcp",
+          "service": "mbap",
+          "version": ""
+        },
+        "4242": {
+          "state": "filtered",
+          "protocol": "tcp",
+          "service": "vrml-multi-use",
+          "version": ""
+        },
+        "5683": {
+          "state": "open",
+          "protocol": "udp",
+          "service": "coap",
+          "version": ""
+        }
+      },
+      "os_guess": null,
+      "classification": {
+        "category": "Bare-Metal OT Sensor",
+        "os_guess": "Zephyr RTOS",
+        "arch_guess": "ARM Cortex-M3",
+        "role": "CoAP Sensor / Smart Meter",
+        "attack_surface": [
+          "coap_option_overflow"
+        ]
+      }
+    }
+  },
+  "active_vulnerabilities": {}
+}

