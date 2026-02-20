@@ -277,6 +277,19 @@ See `RED_TEAM_RUNBOOK.md` for the full decision tree and constraints.
 
 ---
 
+## Cursor-Driven Benchmark (Phase 5)
+
+The benchmark is **Cursor-in-the-loop**: Cursor (the AI) makes all decisions. No human input.
+
+1. Run `sudo python3 apiot/scripts/run_benchmark.py` — setup, mapper, prints `get_targets`
+2. When you see `<<< APIOT_AWAIT_CURSOR_COMMAND >>>`, run again with `--command "attack <tool> <ip>"`
+3. After attack, run with `--command "verify_crash <ip>"` or `verify_shell <ip>`
+4. When done with the scenario, run with `--command "done"` — Blue phase, next scenario or report
+
+Cursor reads the JSON output, reasons, and issues the next command via `--command`.
+
+---
+
 ## Tests
 
 | Test | Command | Purpose |
