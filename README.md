@@ -23,14 +23,14 @@ All attacks target the `192.168.100.0/24` lab subnet. APIOT expects the **iot_vl
                                     ▼
 ┌──────────────────────────────────────────────────────────────────────────┐
 │  agent_loop.py — CLI Tool Harness                                        │
-│  get_state | get_targets | attack | verify_crash | verify_shell | evolve  │
+│  get_state | get_targets | attack | verify_crash | verify_shell | evolve │
 └──────────────────────────────────────────────────────────────────────────┘
                                     │
                                     ▼
 ┌──────────────────────────────────────────────────────────────────────────┐
-│  Core: mapper, state, attack_log, analyzer, evolve, verifier_blue         │
-│  Toolkit: recon, ot_exploits, linux_exploits, verifier, defender,         │
-│           lab_client, visualize                                                                 │
+│  Core: mapper, state, attack_log, analyzer, evolve, verifier_blue        │
+│  Toolkit: recon, ot_exploits, linux_exploits, verifier, defender,        │
+│           lab_client, visualize                                          │
 └──────────────────────────────────────────────────────────────────────────┘
                                     │
                                     ▼
