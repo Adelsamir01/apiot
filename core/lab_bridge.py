@@ -107,25 +107,24 @@ def _populate_lab(lab: LabClient):
     time.sleep(wait)
 
 
-def _run_mapper(subnet: str = "192.168.100.0/24"):
+def _run_mapper():
     """Run the APIOT network mapper to populate network_state.json."""
     print("[Lab Bridge] Running network mapper...")
     try:
-        from apiot.core.mapper import NetworkMapper
-        NetworkMapper(subnet=subnet).run()
+        from apiot.core.mapper import run_mapper
+        run_mapper()
         print("[Lab Bridge] Mapper complete. network_state.json updated.")
     except Exception as e:
         print(f"[Lab Bridge] Mapper failed (non-fatal): {e}")
         print("[Lab Bridge] The agent can still use manage_lab tools to inspect topology.")
 
 
-def ensure_lab_ready(skip_bootstrap: bool = False, subnet: str = "192.168.100.0/24"):
+def ensure_lab_ready(skip_bootstrap: bool = False):
     """Full pre-flight sequence. Call this before the agent loop.
 
     Args:
         skip_bootstrap: If True, skip auto-start and auto-populate.
                         Useful when the lab is already running externally.
-        subnet: Target network to map after devices boot.
     """
     if skip_bootstrap:
         print("[Lab Bridge] Bootstrap skipped (--skip-bootstrap).")
@@ -157,7 +156,7 @@ def ensure_lab_ready(skip_bootstrap: bool = False, subnet: str = "192.168.100.0/
     except Exception as e:
         print(f"[Lab Bridge] Populate failed: {e}")
 
-    # Step 3: Run mapper with the user-specified subnet
-    _run_mapper(subnet=subnet)
+    # Step 3: Run mapper
+    _run_mapper()
 
     print("[Lab Bridge] Pre-flight complete. Ready for agent loop.\n")

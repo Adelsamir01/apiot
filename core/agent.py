@@ -15,31 +15,26 @@ from apiot.core.lab_bridge import ensure_lab_ready
 from apiot.core.tui import OperatorConsole
 
 
-DEFAULT_SUBNET = "192.168.100.0/24"
-
-
-def _build_system_prompt(subnet: str) -> str:
-    return (
-        f"You are APIOT, an autonomous Purple Team security agent orchestrating an emulated IoT network.\n"
-        f"Your target lab subnet is {subnet}.\n\n"
-        "You have access to tools that let you interact with the network and the lab environment.\n"
-        "USE YOUR TOOLS. Do not simulate or imagine results. Call the tools and read their output.\n\n"
-        "Rules of Engagement (Red Team Runbook):\n"
-        "1. Start by calling get_actionable_targets to discover what is on the network.\n"
-        "2. For each target, pick an appropriate exploit from the attack surface and call execute_exploit.\n"
-        "3. ALWAYS call verify_crash or verify_shell immediately after every attack. Never assume success.\n"
-        "4. If a target crashes, move to the next one. Do not retry crashed targets indefinitely.\n"
-        "5. Once all targets have been assessed and verified, output the text TASK_COMPLETE.\n\n"
-        "Important:\n"
-        "- Do not generate shell commands or code. Use ONLY the provided tools.\n"
-        "- Reason briefly about your plan before each tool call.\n"
-        "- Output TASK_COMPLETE (exactly) when your mission is done."
-    )
+SYSTEM_PROMPT = (
+    "You are APIOT, an autonomous Purple Team security agent orchestrating an emulated IoT network.\n"
+    "Your lab subnet is 192.168.100.0/24.\n\n"
+    "You have access to tools that let you interact with the network and the lab environment.\n"
+    "USE YOUR TOOLS. Do not simulate or imagine results. Call the tools and read their output.\n\n"
+    "Rules of Engagement (Red Team Runbook):\n"
+    "1. Start by calling get_actionable_targets to discover what is on the network.\n"
+    "2. For each target, pick an appropriate exploit from the attack surface and call execute_exploit.\n"
+    "3. ALWAYS call verify_crash or verify_shell immediately after every attack. Never assume success.\n"
+    "4. If a target crashes, move to the next one. Do not retry crashed targets indefinitely.\n"
+    "5. Once all targets have been assessed and verified, output the text TASK_COMPLETE.\n\n"
+    "Important:\n"
+    "- Do not generate shell commands or code. Use ONLY the provided tools.\n"
+    "- Reason briefly about your plan before each tool call.\n"
+    "- Output TASK_COMPLETE (exactly) when your mission is done."
+)
 
 
 class APIOTAgent:
-    def __init__(self, subnet: str = DEFAULT_SUBNET):
-        self.subnet = subnet
+    def __init__(self):
         self.api_key = config.get_openrouter_api_key()
         self.model = config.get_llm_model()
         self.client = OpenAI(
@@ -51,13 +46,13 @@ class APIOTAgent:
             },
         )
         self.memory = AgentMemory()
-        self.messages = [{"role": "system", "content": _build_system_prompt(subnet)}]
+        self.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
     def run(self, skip_bootstrap: bool = False, use_tui: bool = True):
         """Starts the persistent autonomous event loop."""
         # --- Stage 3: Pre-flight lab bootstrap ---
         # Run bootstrap BEFORE starting the TUI so its prints don't mess up rendering
-        ensure_lab_ready(skip_bootstrap=skip_bootstrap, subnet=self.subnet)
+        ensure_lab_ready(skip_bootstrap=skip_bootstrap)
 
         console = OperatorConsole(use_tui=use_tui)
         console.start()

@@ -1,3 +1,15 @@
+Metadata-Version: 2.4
+Name: apiot
+Version: 2.0.0
+Summary: Autonomous Purple Team IoT Security Agent
+License: MIT
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: openai>=1.0
+Requires-Dist: python-dotenv>=1.0
+Requires-Dist: requests>=2.28
+Requires-Dist: rich>=13.0
+
 # APIOT — Agentic Purple IoT Toolkit
 
 APIOT is a **fully autonomous, LLM-driven Red/Blue agent orchestrator** for IoT security testing. Inspired by OpenClaw's event-driven architecture, APIOT utilizes an internal continuous `thought -> action -> observation` loop to autonomously explore, attack, and verify vulnerabilities within a virtualized IoT network.

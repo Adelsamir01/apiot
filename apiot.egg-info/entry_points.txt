@@ -1,0 +1,2 @@
+[console_scripts]
+apiot = apiot.core.cli:main
