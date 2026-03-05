@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "timestamp": 1772725346.2878747,
+    "attack": "coap_option_overflow",
+    "target_ip": "192.168.100.35",
+    "rule": "iptables -A FORWARD -p udp --dport 5683 -m length --length 0:7 -j DROP",
+    "applied": true,
+    "elapsed_s": 0.03665518760681152
+  }
+]

@@ -9,72 +9,15 @@
     "192.168.100.35": {
       "ip": "192.168.100.35",
       "ports": {
-        "22": {
-          "state": "filtered",
-          "protocol": "tcp",
-          "service": "ssh",
-          "version": ""
-        },
-        "23": {
-          "state": "filtered",
-          "protocol": "tcp",
-          "service": "telnet",
-          "version": ""
-        },
-        "80": {
-          "state": "filtered",
-          "protocol": "tcp",
-          "service": "http",
-          "version": ""
-        },
-        "443": {
-          "state": "filtered",
-          "protocol": "tcp",
-          "service": "https",
-          "version": ""
-        },
-        "502": {
-          "state": "filtered",
-          "protocol": "tcp",
-          "service": "mbap",
-          "version": ""
-        },
         "4242": {
-          "state": "filtered",
-          "protocol": "tcp",
-          "service": "vrml-multi-use",
-          "version": ""
-        },
-        "5683": {
           "state": "open",
-          "protocol": "udp",
-          "service": "coap",
+          "protocol": "tcp",
+          "service": "echo",
           "version": ""
         }
       },
-      "os_guess": null,
-      "classification": {
-        "category": "Bare-Metal OT Sensor",
-        "os_guess": "Zephyr RTOS",
-        "arch_guess": "ARM Cortex-M3",
-        "role": "CoAP Sensor / Smart Meter",
-        "attack_surface": [
-          "coap_option_overflow"
-        ]
-      }
+      "os_guess": null
     }
   },
-  "active_vulnerabilities": {
-    "0c2dc62f7874": {
-      "ip": "192.168.100.35",
-      "attack": "crash_verified",
-      "verification": {
-        "status": "crashed",
-        "verified": true,
-        "ip": "192.168.100.35",
-        "details": "ICMP ping failed"
-      },
-      "timestamp": 1772210651.722198
-    }
-  }
+  "active_vulnerabilities": {}
 }
