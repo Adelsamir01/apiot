@@ -64,5 +64,17 @@
       }
     }
   },
-  "active_vulnerabilities": {}
+  "active_vulnerabilities": {
+    "0c2dc62f7874": {
+      "ip": "192.168.100.35",
+      "attack": "crash_verified",
+      "verification": {
+        "status": "crashed",
+        "verified": true,
+        "ip": "192.168.100.35",
+        "details": "ICMP ping failed"
+      },
+      "timestamp": 1772210651.722198
+    }
+  }
 }
