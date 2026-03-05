@@ -13,7 +13,7 @@ def scan_subnet(subnet: str = "192.168.100.10-50", interface: str | None = "br0"
 
     Each host dict: {"ip": str, "mac": str | None, "vendor": str | None}
     """
-    cmd = ["sudo", "nmap", "-sn", "-n", "--send-ip"]
+    cmd = ["sudo", "nmap", "-sn", "-n"]
     if interface:
         cmd += ["-e", interface]
     cmd += [subnet, "-oX", "-"]

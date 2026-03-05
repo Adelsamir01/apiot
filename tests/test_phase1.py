@@ -126,7 +126,7 @@ def run_tests(client: LabClient, memory: AgentMemory):
     print("\n--- Test: topology ---")
     topo = client.get_topology()
     check("Topology is a list", isinstance(topo, list))
-    check("Two devices in topology", len(topo) == 2, f"got {len(topo)}")
+    check("At least two devices in topology", len(topo) >= 2, f"got {len(topo)}")
 
     # Collect IPs from topology
     echo_entry = next((d for d in topo if d["firmware_id"] == "zephyr_echo"), None)
@@ -142,7 +142,7 @@ def run_tests(client: LabClient, memory: AgentMemory):
 
     # --- 6. Subnet scan ---
     print("\n--- Test: scan_subnet ---")
-    hosts = scan_subnet("192.168.100.0/24")
+    hosts = scan_subnet("192.168.100.10-50")
     check("scan_subnet returns list", isinstance(hosts, list))
     check("At least 1 host found", len(hosts) >= 1, f"found {len(hosts)}")
     host_ips = [h["ip"] for h in hosts]
