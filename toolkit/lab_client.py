@@ -1,4 +1,8 @@
-"""lab_client.py — Python client for the iot_vlab REST API."""
+"""lab_client.py — Read-only Python client for the iot_vlab REST API.
+
+APIOT only communicates with iot_vlab; it never controls its lifecycle.
+This client exposes read-only endpoints (library, topology).
+"""
 
 import requests
 
@@ -8,7 +12,7 @@ class LabOfflineError(ConnectionError):
 
 
 class LabClient:
-    """Structured interface to the iot_vlab REST API (default http://localhost:5000)."""
+    """Read-only interface to the iot_vlab REST API (default http://localhost:5000)."""
 
     def __init__(self, base_url: str = "http://localhost:5000", timeout: int = 10):
         self.base_url = base_url.rstrip("/")
@@ -29,18 +33,6 @@ class LabClient:
         """Return list of available firmware configs."""
         return self._request("GET", "/library")
 
-    def spawn_device(self, firmware_id: str) -> dict:
-        """Boot a device. Returns {'run_id': '...'}."""
-        return self._request("POST", "/spawn", json={"firmware_id": firmware_id})
-
     def get_topology(self) -> list[dict]:
         """Return list of active VM instances with IPs."""
         return self._request("GET", "/topology")
-
-    def kill_device(self, run_id: str) -> dict:
-        """Stop a specific device by run_id."""
-        return self._request("POST", f"/kill/{run_id}")
-
-    def reset_lab(self) -> dict:
-        """Kill all running instances."""
-        return self._request("POST", "/reset_lab")

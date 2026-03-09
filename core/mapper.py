@@ -154,6 +154,10 @@ class NetworkMapper:
         print(f"  {ip:>18s}  [{tag['category']}]  ports={sorted(open_ports)}  -> {tag['role']}")
 
 
+def run_mapper(subnet: str = "192.168.100.10-50") -> dict:
+    """Convenience entry point used by lab_bridge and CLI."""
+    return NetworkMapper(subnet=subnet).run()
+
+
 if __name__ == "__main__":
-    mapper = NetworkMapper()
-    mapper.run()
+    run_mapper()

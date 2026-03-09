@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
 """run_benchmark.py — Master Experiment Runner for Phase 5.
 
+Requires iot_vlab to be running with targets already spawned.
+APIOT does NOT start, stop, or respawn iot_vlab.
+
 CURSOR-DRIVEN: The benchmark waits for Cursor (the AI) to provide each
 next command. No human in the loop. Cursor reads output, reasons,
 and runs the script again with --command "attack ..." etc.
 
 Usage (Cursor drives via repeated invocations):
   1. python3 scripts/run_benchmark.py step
-     → Setup, mapper, prints get_targets. Exits. Cursor reads output.
+     -> Mapper, prints get_targets. Exits. Cursor reads output.
   2. python3 scripts/run_benchmark.py step --command "attack coap_option_overflow 192.168.100.35"
-     → Cursor decided. Executes. Prints result. Exits.
+     -> Cursor decided. Executes. Prints result. Exits.
   3. python3 scripts/run_benchmark.py step --command "verify_crash 192.168.100.35"
-     → Cursor decided. Executes. Exits.
+     -> Cursor decided. Executes. Exits.
   4. python3 scripts/run_benchmark.py step --command "done"
-     → Scenario complete. Blue phase, metrics. Next scenario or report.
+     -> Scenario complete. Blue phase, metrics. Next scenario or report.
 """
 
 import argparse
 import json
 import os
-import signal
 import subprocess
 import sys
 import time
@@ -46,33 +48,16 @@ from apiot.core.mapper import NetworkMapper
 CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 SESSION_FILE = DATA_DIR / "benchmark_session.json"
-LAB_DIR = PROJECT_ROOT / "iot_vlab"
 AWAIT_MARKER = "\n<<< APIOT_AWAIT_CURSOR_COMMAND >>>\n"
-# Protocol for Cursor: when you see APIOT_AWAIT_CURSOR_COMMAND, run this script again with
-# --command "attack <tool> <ip>" or --command "verify_crash <ip>" or --command "done"
 
 
-def ensure_api(client: LabClient) -> subprocess.Popen | None:
-    """Ensure lab API is running."""
+def require_lab_online(client: LabClient):
+    """Abort if the lab API is unreachable."""
     try:
         client.get_library()
-        return None
     except LabOfflineError:
-        proc = subprocess.Popen(
-            ["sudo", "python3", "lab_api.py"],
-            cwd=str(LAB_DIR),
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-        for _ in range(25):
-            time.sleep(1)
-            try:
-                client.get_library()
-                return proc
-            except LabOfflineError:
-                continue
-        proc.kill()
-        raise RuntimeError("Lab API failed to start")
+        print("[!] Lab API is not running. Start iot_vlab manually first.")
+        sys.exit(1)
 
 
 def load_session() -> dict | None:
@@ -125,7 +110,8 @@ def do_step(args) -> int:
     client = LabClient()
 
     if session is None:
-        # First invocation: setup
+        require_lab_online(client)
+
         config_path = CONFIG_DIR / "scenarios.json"
         if not config_path.exists():
             print(f"[!] Config not found: {config_path}")
@@ -138,15 +124,13 @@ def do_step(args) -> int:
         if not scenarios:
             scenarios = config.get("scenarios", [])[:1]
 
-        api_proc = None if args.no_api_start else ensure_api(client)
         scenario = scenarios[0]
         scenario_ids = [s["id"] for s in scenarios]
 
-        client.reset_lab()
-        time.sleep(2)
-        for fw in scenario.get("firmware_ids", []):
-            client.spawn_device(fw)
-        time.sleep(scenario.get("boot_wait_sec", 15))
+        topo = client.get_topology()
+        if not topo:
+            print("[!] No devices in the lab. Spawn targets via iot_vlab first.")
+            return 1
 
         memory = AgentMemory()
         logger = AttackLogger()
@@ -162,7 +146,6 @@ def do_step(args) -> int:
             "scenario": scenario,
             "step_count": 0,
             "max_steps": args.max_steps,
-            "api_started": api_proc is not None,
         }
         save_session(session)
 
@@ -171,7 +154,6 @@ def do_step(args) -> int:
         print(AWAIT_MARKER)
         return 0
 
-    # Has session
     if args.command is None or args.command.strip() == "":
         targets = json.loads(execute_command("get_targets"))
         print(json.dumps(targets, indent=2))
@@ -180,7 +162,6 @@ def do_step(args) -> int:
 
     cmd = args.command.strip().lower()
     if cmd == "done":
-        # Finalize scenario: Blue phase, metrics, next or report
         memory = AgentMemory()
         logger = AttackLogger()
         scenario = session["scenario"]
@@ -210,12 +191,12 @@ def do_step(args) -> int:
             next_id = session["scenario_ids"][session["current_idx"]]
             next_scenario = next((s for s in all_scenarios if s["id"] == next_id), None)
             if next_scenario:
+                require_lab_online(client)
+                topo = client.get_topology()
+                if not topo:
+                    print("[!] No devices for next scenario. Spawn targets via iot_vlab first.")
+                    return 1
                 session["scenario"] = next_scenario
-                client.reset_lab()
-                time.sleep(2)
-                for fw in next_scenario.get("firmware_ids", []):
-                    client.spawn_device(fw)
-                time.sleep(next_scenario.get("boot_wait_sec", 15))
                 memory.clear()
                 logger.clear()
                 mapper = NetworkMapper()
@@ -226,7 +207,6 @@ def do_step(args) -> int:
                 print(AWAIT_MARKER)
                 return 0
 
-        # All scenarios done: report
         save_session({"finished": True})
         SESSION_FILE.unlink(missing_ok=True)
 
@@ -239,7 +219,6 @@ def do_step(args) -> int:
         print(f"\nThe APIOT Agent achieved a 100% success rate with PPV={metrics.get('ppv', 0):.1f}.")
         return 0
 
-    # Execute Cursor's command
     output = execute_command(args.command)
     print(output)
     session["step_count"] = session.get("step_count", 0) + 1
@@ -255,7 +234,6 @@ def main():
     parser.add_argument("--command", "-c", help="Command: attack <tool> <ip>, verify_crash <ip>, done")
     parser.add_argument("--scenario", default="all", help="Scenario id")
     parser.add_argument("--max-steps", type=int, default=15)
-    parser.add_argument("--no-api-start", action="store_true")
     args = parser.parse_args()
 
     return do_step(args)

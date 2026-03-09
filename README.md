@@ -1,15 +1,16 @@
 # APIOT — Agentic Purple IoT Toolkit
 
-APIOT is a **fully autonomous, LLM-driven Red/Blue agent orchestrator** for IoT security testing. Inspired by OpenClaw's event-driven architecture, APIOT utilizes an internal continuous `thought -> action -> observation` loop to autonomously explore, attack, and verify vulnerabilities within a virtualized IoT network.
+APIOT is a **fully autonomous, LLM-driven Red/Blue agent orchestrator** for IoT security testing. It uses a continuous `thought -> action -> observation` loop to autonomously explore, attack, and verify vulnerabilities within a virtualized IoT network.
 
-The LLM (via OpenRouter) acts as the brain, while APIOT provides the native JSON Schema tools, network mapping capabilities, and emulated lab orchestration.
+The LLM (via OpenRouter) acts as the brain, while APIOT provides the native JSON Schema tools, network mapping capabilities, and read-only lab inspection.
 
 ## Overview
 
-- **Fully Autonomous Daemon:** APIOT self-manages its execution loop. You launch the agent, and it handles everything from spawning the lab to verifying the final patch.
+- **Interactive Terminal App:** Run `apiot` and a guided onboarding flow walks you through API key setup, lab connectivity, and mode selection.
+- **Fully Autonomous Daemon:** Once configured, the LLM takes over and handles everything from reconnaissance to vulnerability verification.
 - **Native Tool Calling:** The LLM interacts directly with APIOT's hacking toolkit using strict OpenAI-compatible JSON schemas.
-- **Lab Infrastructure Orchestrator:** APIOT natively interfaces with `iot_vlab`. It automatically spins up the lab REST API, spawns firmware targets, and maps the network before it begins its attack phase.
-- **Rich Operator Console:** A split-terminal user interface allows you to watch the agent's inner monologue, tool executions, and a live network topology map in real-time.
+- **Communication-Only Lab Access:** APIOT communicates with `iot_vlab` via its REST API but **never starts, stops, spawns, kills, or resets** the lab or its devices. You manage `iot_vlab` manually.
+- **Rich Operator Console:** A split-terminal UI shows the agent's inner monologue, tool executions, and a live network topology map in real-time.
 
 All attacks target the `192.168.100.0/24` lab subnet provided by **iot_vlab**.
 
@@ -19,6 +20,12 @@ All attacks target the `192.168.100.0/24` lab subnet provided by **iot_vlab**.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
+│  Interactive CLI (core/cli.py)                                           │
+│  Onboarding: API key → Lab check → Topology → Mapper → Mode select      │
+└──────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌──────────────────────────────────────────────────────────────────────────┐
 │  APIOT Agent Brain (core/agent.py)                                       │
 │  Continuous Event Loop | OpenRouter Client | Rich TUI Console            │
 └──────────────────────────────────────────────────────────────────────────┘
@@ -26,7 +33,7 @@ All attacks target the `192.168.100.0/24` lab subnet provided by **iot_vlab**.
                                     ▼ (JSON Tool Calling)
 ┌──────────────────────────────────────────────────────────────────────────┐
 │  The Skills Registry (core/tools/registry.py & dispatcher.py)            │
-│  get_targets | execute_exploit | verify_crash | verify_shell | manage    │
+│  get_targets | execute_exploit | verify_crash | verify_shell | inspect   │
 └──────────────────────────────────────────────────────────────────────────┘
                                     │
                                     ▼
@@ -35,12 +42,19 @@ All attacks target the `192.168.100.0/24` lab subnet provided by **iot_vlab**.
 │  mapper, recon, ot_exploits, linux_exploits, verifier, defender          │
 └──────────────────────────────────────────────────────────────────────────┘
                                     │
-                                    ▼
+                                    ▼ (HTTP REST — read-only + network probes)
 ┌──────────────────────────────────────────────────────────────────────────┐
-│  iot_vlab — Emulated IoT Network                                         │
+│  iot_vlab — Emulated IoT Network (started & managed manually)            │
 │  QEMU ARM/MIPS VMs bridged to 192.168.100.0/24                           │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
+
+### Isolation Model
+
+APIOT treats `iot_vlab` as an **external, independently managed system**:
+
+- **Allowed:** Querying the lab REST API (`/topology`, `/library`), scanning the network, sending exploit payloads over the wire.
+- **Forbidden:** Starting/stopping the lab API, spawning/killing/resetting devices, accessing `iot_vlab` filesystem paths, running `iot_vlab` scripts.
 
 ---
 
@@ -48,57 +62,95 @@ All attacks target the `192.168.100.0/24` lab subnet provided by **iot_vlab**.
 
 | Requirement | Notes |
 |-------------|-------|
-| **OpenRouter API Key** | Set `OPENROUTER_API_KEY` in the package root `.env` file |
+| **OpenRouter API Key** | Provided interactively on first run, or set in `apiot/.env` |
 | **Python 3.10+** | With `openai`, `python-dotenv`, `requests`, and `rich` |
-| **iot_vlab** | The `iot_vlab` folder must be a sibling directory to `apiot` |
-| **Kali Linux** | Recommended OS (required for the underlying `iot_vlab` QEMU emulation and network bridges) |
+| **iot_vlab** | Must be running and accessible at `http://localhost:5000` |
+| **Kali Linux** | Recommended OS (required for the underlying QEMU emulation) |
 | **sudo** | Required for nmap scans, recon, and iptables operations |
 
 ---
 
 ## Installation
 
-From the project root (`llm_iot/`):
-
 ```bash
-# 1. Ensure iot_vlab is set up (Kali Linux)
+# 1. Start iot_vlab manually (in a separate terminal)
 cd iot_vlab
 sudo ./setup_network.sh
 ./download_firmware.sh
-cd ..
+sudo python3 lab_api.py
+# Spawn targets via the iot_vlab API or interactive wizard
 
-# 2. Install Python dependencies
-pip3 install openai python-dotenv requests rich
-
-# 3. Configure API Key
-echo 'OPENROUTER_API_KEY="sk-or-v1-..."' > apiot/.env
-echo 'LLM_MODEL="anthropic/claude-3.5-sonnet"' >> apiot/.env
+# 2. Install APIOT
+cd apiot
+pip3 install -e .
 ```
 
 ---
 
 ## Usage
 
-The entire system is designed to run via a single entry point. 
+```bash
+apiot
+```
 
-Run from the project root so `apiot` is importable:
+The interactive onboarding flow will guide you through:
+
+```
+    ___    ____  ________  ______
+   /   |  / __ \/  _/ __ \/_  __/
+  / /| | / /_/ // // / / / / /
+ / ___ |/ ____// // /_/ / / /
+/_/  |_/_/   /___/\____/ /_/
+
+  Autonomous Purple IoT Toolkit
+
+  [1/5] OpenRouter API Key
+        OK  Key loaded: sk-or-v1-c04...662d
+
+  [2/5] Lab Connectivity
+        OK  iot_vlab REST API is reachable at http://localhost:5000
+
+  [3/5] Device Topology
+        OK  2 device(s) found:
+        ┌──────────────┬──────────────────┬───────┐
+        │ Firmware      │ IP               │ Alive │
+        ├──────────────┼──────────────────┼───────┤
+        │ zephyr_coap   │ 192.168.100.35   │  YES  │
+        │ dvrf_v03      │ 192.168.100.12   │  YES  │
+        └──────────────┴──────────────────┴───────┘
+
+  [4/5] Network Mapping
+        OK  Mapped 2 target(s). network_state.json updated.
+
+  [5/5] Mission Mode
+        1  Autonomous Red Team
+           Fully autonomous attack + verification loop.
+
+        2  Manual CLI Harness
+           You drive tool commands one at a time via the CLI.
+
+        Select mode [1]:
+```
+
+### Modes
+
+| Mode | Description |
+|------|-------------|
+| **Autonomous Red Team** | The LLM takes full control. It discovers targets, selects exploits, fires payloads, and verifies results. You watch via the TUI. |
+| **Manual CLI Harness** | You drive each step yourself via the command line. Useful for learning, debugging, or scripted workflows. |
+
+### Direct Agent Launch (no onboarding)
+
+If you prefer to skip the interactive flow:
 
 ```bash
 cd /path/to/llm_iot
 export PYTHONPATH="${PWD}"
-
-# Start the fully autonomous orchestrator
-sudo python3 -m apiot.core.agent
+sudo python3 -m apiot.core.agent          # with TUI
+sudo python3 -m apiot.core.agent --no-tui  # raw stdout
 ```
 
-### What Happens When You Run It:
-1. **Lab Bridge Bootstrap:** APIOT will check if `iot_vlab` is running. If not, it starts the background REST API, spawns a default set of firmware (`zephyr_coap` and `dvrf_v03`), and runs the network mapper.
-2. **TUI Initialization:** The Rich Operator Console launches, displaying the live network map and stats.
-3. **Agent Loop:** The LLM takes over. It will use `get_actionable_targets` to view the mapper's findings, select exploits, fire payloads, and use `verify_crash` or `verify_shell` to confirm vulnerabilities until the network is fully assessed.
-
-### Flags
-- `--skip-bootstrap`: Bypasses the lab auto-start and auto-populate sequences. Use this if you are managing `iot_vlab` manually.
-- `--no-tui`: Disables the split-panel GUI, falling back to raw standard output (useful for CI/CD or logging to file).
+This requires `OPENROUTER_API_KEY` and `LLM_MODEL` to be set in `apiot/.env` and `iot_vlab` to be running with devices.
 
 ---
 
@@ -107,25 +159,33 @@ sudo python3 -m apiot.core.agent
 ```
 apiot/
 ├── README.md
-├── RED_TEAM_RUNBOOK.md        # The rules engine injected into the Agent's system prompt
+├── RED_TEAM_RUNBOOK.md        # Behavioral constraints for the Agent
 ├── .env                       # API keys and model configuration
 ├── core/
+│   ├── cli.py                 # Interactive terminal entry point + onboarding
 │   ├── agent.py               # The main autonomous daemon loop
-│   ├── lab_bridge.py          # Zero-touch bootstrap orchestrator
+│   ├── lab_bridge.py          # Pre-flight check (verifies lab is online)
 │   ├── tui.py                 # Rich split-terminal UI renderer
 │   ├── tools/
 │   │   ├── registry.py        # OpenAPI JSON schemas for LLM tool calling
 │   │   └── dispatcher.py      # Routes tool calls to the toolkit functions
 │   ├── state.py               # JSON File I/O for network state persistence
 │   ├── mapper.py              # Autonomous network mapper (nmap wrappers)
-│   ├── analyzer.py            # Blue team defensive payload analyzer (WIP)
-│   └── verifier_blue.py       # Blue team patch verification (WIP)
+│   ├── analyzer.py            # Blue team defensive payload analyzer
+│   └── verifier_blue.py       # Blue team patch verification
 ├── toolkit/
 │   ├── ot_exploits.py         # Modbus and CoAP attack implementations
 │   ├── linux_exploits.py      # Telnet and HTTP attack implementations
 │   ├── verifier.py            # Post-exploit crash and shell verification
-│   ├── lab_client.py          # REST client communicating with iot_vlab
+│   ├── lab_client.py          # Read-only REST client for iot_vlab
 │   └── recon.py               # Underlying scanning wrappers
+├── tests/
+│   ├── test_isolation.py      # Verifies APIOT cannot control iot_vlab lifecycle
+│   ├── test_guardrails.py     # Verifies API key + lab pre-flight gates
+│   ├── test_phase1.py         # Integration test (requires running lab)
+│   ├── test_phase2_tools.py   # Offline packet construction validation
+│   ├── full_autonomous_run.py # Infrastructure check + verification
+│   └── closed_loop_remediation.py  # Purple team closed-loop test
 └── data/
     ├── network_state.json     # Live DB of discovered hosts and vulns
     └── attack_log.json        # Append-only log of fired payloads

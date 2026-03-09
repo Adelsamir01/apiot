@@ -21,15 +21,7 @@ _lab = LabClient()
 
 
 def dispatch_tool(name: str, arguments: dict) -> str:
-    """Execute a tool by name and return a JSON string result.
-
-    Args:
-        name: The function name from the LLM tool_call.
-        arguments: The parsed arguments dict from the LLM tool_call.
-
-    Returns:
-        A JSON string containing the tool's output.
-    """
+    """Execute a tool by name and return a JSON string result."""
     try:
         result = _dispatch(name, arguments)
     except Exception as e:
@@ -65,7 +57,7 @@ def _dispatch(name: str, args: dict) -> dict | list:
         port = args.get("port", 23)
         return cmd_verify_shell(args["ip"], port)
 
-    elif name == "manage_lab":
+    elif name == "inspect_lab":
         return _dispatch_lab(args)
 
     else:
@@ -73,26 +65,11 @@ def _dispatch(name: str, args: dict) -> dict | list:
 
 
 def _dispatch_lab(args: dict) -> dict | list:
-    """Handle lab management actions."""
+    """Handle read-only lab queries."""
     action = args["action"]
 
-    if action == "spawn":
-        firmware_id = args.get("firmware_id")
-        if not firmware_id:
-            return {"error": "firmware_id is required for spawn action"}
-        return _lab.spawn_device(firmware_id)
-
-    elif action == "topology":
+    if action == "topology":
         return _lab.get_topology()
-
-    elif action == "kill":
-        run_id = args.get("run_id")
-        if not run_id:
-            return {"error": "run_id is required for kill action"}
-        return _lab.kill_device(run_id)
-
-    elif action == "reset":
-        return _lab.reset_lab()
 
     elif action == "library":
         return _lab.get_library()

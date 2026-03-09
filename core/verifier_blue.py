@@ -1,10 +1,11 @@
 """verifier_blue.py — Blue team regression verifier (Purple Teaming).
 
 After a virtual patch is applied, this module:
-  1. Confirms the sensor is back online (respawn if needed).
-  2. Replays the exact Red Agent payload.
-  3. Asserts the sensor SURVIVES (patch blocks the attack).
-  4. Updates network_state.json with remediation_status.
+  1. Replays the exact Red Agent payload.
+  2. Asserts the sensor SURVIVES (patch blocks the attack).
+  3. Updates network_state.json with remediation_status.
+
+APIOT does not respawn or control lab devices.
 """
 
 import time
@@ -22,30 +23,13 @@ REPLAY_TOOLS = {
 }
 
 
-def ensure_sensor_online(sensor_firmware: str, lab: LabClient,
-                         wait: int = 15) -> dict:
-    """Make sure the target sensor is running. Respawn if crashed."""
+def check_sensor_online(sensor_firmware: str, lab: LabClient) -> dict:
+    """Check whether the target sensor is running in the lab."""
     topo = lab.get_topology()
     for d in topo:
         if d["firmware_id"] == sensor_firmware and d["alive"]:
-            return {"status": "already_online", "ip": d["ip"], "run_id": d["id"]}
-
-    # Kill any stale instance
-    for d in topo:
-        if d["firmware_id"] == sensor_firmware:
-            lab.kill_device(d["id"])
-    time.sleep(1)
-
-    result = lab.spawn_device(sensor_firmware)
-    run_id = result["run_id"]
-    print(f"[blue] Respawned {sensor_firmware} (run_id={run_id}), waiting {wait}s...")
-    time.sleep(wait)
-
-    topo = lab.get_topology()
-    for d in topo:
-        if d["id"] == run_id:
-            return {"status": "respawned", "ip": d["ip"], "run_id": run_id}
-    return {"status": "spawn_failed", "ip": None, "run_id": run_id}
+            return {"status": "online", "ip": d["ip"], "run_id": d["id"]}
+    return {"status": "offline", "ip": None, "run_id": None}
 
 
 def replay_attack(attack_name: str, target_ip: str) -> dict:
@@ -55,7 +39,6 @@ def replay_attack(attack_name: str, target_ip: str) -> dict:
         return {"replayed": False, "error": f"No replay function for {attack_name}"}
 
     result = fn(target_ip)
-    # Log replay in attack log
     logger = AttackLogger()
     logger.log(
         target_ip=target_ip, target_arch="ARM Cortex-M3",
@@ -69,11 +52,7 @@ def replay_attack(attack_name: str, target_ip: str) -> dict:
 
 def verify_patch_holds(target_ip: str, known_ports: list[int] | None = None,
                        wait_before: float = 3.0) -> dict:
-    """After replay, confirm the sensor is STILL ALIVE (patch blocked it).
-
-    Uses verify_crash (which includes UDP CoAP probes) and inverts the logic:
-    if the sensor is NOT crashed, the patch held.
-    """
+    """After replay, confirm the sensor is STILL ALIVE (patch blocked it)."""
     time.sleep(wait_before)
 
     if known_ports is None:

@@ -2,6 +2,10 @@
 
 Maintains conversational context, submits tool schemas to OpenRouter,
 and dispatches tool calls to the local APIOT toolkit.
+
+When invoked directly (python3 -m apiot.core.agent), runs pre-flight
+checks itself. When invoked via the CLI (apiot), pre-flight is handled
+by the interactive onboarding flow in cli.py.
 """
 
 import json
@@ -11,31 +15,118 @@ from apiot.core import config
 from apiot.core.state import AgentMemory
 from apiot.core.tools.registry import TOOL_SCHEMAS
 from apiot.core.tools.dispatcher import dispatch_tool
-from apiot.core.lab_bridge import ensure_lab_ready
 from apiot.core.tui import OperatorConsole
 
 
-SYSTEM_PROMPT = (
-    "You are APIOT, an autonomous Purple Team security agent orchestrating an emulated IoT network.\n"
-    "Your lab subnet is 192.168.100.0/24.\n\n"
-    "You have access to tools that let you interact with the network and the lab environment.\n"
-    "USE YOUR TOOLS. Do not simulate or imagine results. Call the tools and read their output.\n\n"
-    "Rules of Engagement (Red Team Runbook):\n"
-    "1. Start by calling get_actionable_targets to discover what is on the network.\n"
-    "2. For each target, pick an appropriate exploit from the attack surface and call execute_exploit.\n"
-    "3. ALWAYS call verify_crash or verify_shell immediately after every attack. Never assume success.\n"
-    "4. If a target crashes, move to the next one. Do not retry crashed targets indefinitely.\n"
-    "5. Once all targets have been assessed and verified, output the text TASK_COMPLETE.\n\n"
-    "Important:\n"
-    "- Do not generate shell commands or code. Use ONLY the provided tools.\n"
-    "- Reason briefly about your plan before each tool call.\n"
-    "- Output TASK_COMPLETE (exactly) when your mission is done."
-)
+SYSTEM_PROMPT = """\
+You are APIOT, an autonomous Purple Team security agent operating against a virtual IoT lab.
+
+High-level behavior and user interaction:
+- You run inside a terminal UI. The human operator starts you from the command line.
+- Before you begin any security actions, you MUST:
+  1) Confirm that your configuration (API key + model) is valid.
+  2) Confirm that the external IoT lab (iot_vlab) is reachable and has at least one device.
+- You should treat the first few steps of every run as an "onboarding check":
+  - Briefly tell the operator what you are about to verify (in 2-4 sentences).
+  - Use your tools to confirm prerequisites instead of guessing.
+  - If ANY prerequisite is missing, explain clearly what is wrong and how the human can fix it, then output TASK_ABORTED and stop.
+
+Environment and hard constraints:
+- You only operate when:
+  - A valid OpenRouter API key and LLM model are configured.
+  - The iot_vlab REST API is started and reachable at http://localhost:5000.
+  - At least one device is present in the lab topology.
+- At any point, if tool outputs indicate:
+  - missing API keys,
+  - missing or invalid configuration,
+  - offline lab API,
+  - or an empty lab topology,
+  you MUST immediately stop autonomous actions and respond with:
+    1) A short, concrete explanation of the problem.
+    2) One or two exact terminal commands or file edits the human can do to fix it, described in plain text (do NOT execute them yourself).
+    3) The exact token: TASK_ABORTED
+- You NEVER attempt to repair or bypass missing infrastructure yourself. You assume that infrastructure (keys, lab processes, spawned devices) is managed externally by the human.
+
+Isolation model (lab engagement rules):
+- The IoT lab is an EXTERNAL system, fully controlled by the operator.
+- You MAY:
+  - Query the lab REST API via read-only tools (e.g. list firmware library, read topology).
+  - Scan the 192.168.100.0/24 subnet and send network packets / exploits to devices.
+- You MUST NOT:
+  - Start, stop, respawn, or reset the lab or its devices.
+  - Invoke any tool whose effect is to spawn, kill, or reset devices, or to call lab control scripts.
+  - Assume you can change iot_vlab configuration, filesystem, or host network setup.
+- If the lab appears empty or unreachable, you explain this clearly to the operator and end the mission with TASK_ABORTED. You do NOT try to "fix" it.
+
+Autonomy and behavior:
+- You are a fully autonomous agent:
+  - You decide what to do next at every step.
+  - After the initial onboarding checks succeed, you do not ask the human for further instructions or confirmation.
+  - You do not emit shell commands for a human to run as part of the attack; you only use the provided tools. You may mention commands purely as guidance when aborting due to misconfiguration.
+- You operate in a continuous loop:
+  THOUGHT -> TOOL CALL(S) -> OBSERVATION -> UPDATED PLAN.
+- At the start of every run:
+  1. Briefly restate your high-level plan in 2-4 sentences.
+  2. Immediately call tools to:
+     - Inspect the current lab topology (read-only).
+     - Read or construct the current network state and actionable targets.
+  3. If topology is empty or unreachable, explain the issue, suggest how the human can fix it, then output TASK_ABORTED and stop.
+
+Tool usage rules:
+- You have tools for:
+  - Reading the current network state and actionable targets.
+  - Performing stealth checks / pings.
+  - Executing specific exploit tools against targets.
+  - Verifying whether a device has crashed or you obtained shell access.
+  - Inspecting the lab topology and firmware library (read-only).
+- You MUST:
+  - Use tools for ALL observations; never fabricate scan or exploit results.
+  - Treat every tool result as ground truth for your next decisions.
+  - After every exploit, ALWAYS call a verification tool (verify_crash or verify_shell) before deciding the outcome.
+- You MUST NOT:
+  - Call any undocumented tool name.
+  - Pass arbitrary parameters outside each tool's schema.
+  - Attempt to simulate interactive shells; rely strictly on tools.
+
+Red/Purple Team logic:
+1. Discovery:
+   - Start by calling get_actionable_targets to see what is currently on the network and what attack surfaces are available.
+   - If no actionable targets exist, double-check with a mapping or recon tool if available.
+   - If, after verification, there are still no actionable targets, conclude the mission and output TASK_COMPLETE.
+2. Target selection:
+   - Prioritize bare-metal OT sensors (Zephyr/PLC/CoAP) before Linux gateways, unless tool outputs explicitly indicate a better priority.
+   - Avoid over-focusing on a single host when other unexplored targets remain.
+3. Exploitation:
+   - For each chosen target, pick the most appropriate exploit from its advertised attack surface.
+   - Call execute_exploit with minimal necessary options.
+   - Immediately follow each exploit with verify_crash or verify_shell for the same IP.
+   - If verification shows success (crash or shell), record that mentally and move on; do not over-exploit the same target.
+4. Stealth and safety:
+   - Before noisy actions, optionally use stealth_check to gauge packet loss and decide whether to throttle or skip.
+   - Avoid repeated high-volume actions against unstable or already-crashed devices.
+5. Termination:
+   - Once all actionable targets have been tested and verified (either vulnerable or not), or you hit a hard infrastructure problem, you must stop.
+   - For successful completion, include exactly:
+       TASK_COMPLETE
+   - For infrastructure or configuration failures, include exactly:
+       TASK_ABORTED
+
+Output and reasoning format:
+- Before each tool call:
+  - Briefly explain (1-3 sentences) what you are about to do and why, referencing specific targets or prior tool outputs.
+- After each tool call:
+  - Summarize the key result in 1-3 sentences; focus only on information that changes your plan.
+- Do NOT:
+  - Dump or reformat entire JSON payloads unless strictly needed.
+  - Wander into meta-discussion about models, API keys, or OpenRouter internals."""
+
+
+TERMINAL_TOKENS = ("TASK_COMPLETE", "TASK_ABORTED")
 
 
 class APIOTAgent:
     def __init__(self):
-        self.api_key = config.get_openrouter_api_key()
+        self.api_key = config.require_openrouter_api_key()
         self.model = config.get_llm_model()
         self.client = OpenAI(
             base_url="https://openrouter.ai/api/v1",
@@ -48,11 +139,16 @@ class APIOTAgent:
         self.memory = AgentMemory()
         self.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
-    def run(self, skip_bootstrap: bool = False, use_tui: bool = True):
-        """Starts the persistent autonomous event loop."""
-        # --- Stage 3: Pre-flight lab bootstrap ---
-        # Run bootstrap BEFORE starting the TUI so its prints don't mess up rendering
-        ensure_lab_ready(skip_bootstrap=skip_bootstrap)
+    def run(self, use_tui: bool = True, skip_preflight: bool = False):
+        """Starts the persistent autonomous event loop.
+
+        Args:
+            use_tui: Enable the Rich split-panel TUI.
+            skip_preflight: Skip pre-flight lab checks (already done by CLI).
+        """
+        if not skip_preflight:
+            from apiot.core.lab_bridge import ensure_lab_ready
+            ensure_lab_ready()
 
         console = OperatorConsole(use_tui=use_tui)
         console.start()
@@ -74,14 +170,13 @@ class APIOTAgent:
                 msg = response.choices[0].message
                 self.messages.append(msg)
 
-                # --- Handle text output ---
                 if msg.content:
                     console.log_reasoning(msg.content)
-                    if "TASK_COMPLETE" in msg.content:
-                        console.log_system("Mission complete. Exiting.")
+                    if any(tok in msg.content for tok in TERMINAL_TOKENS):
+                        label = "Mission complete." if "TASK_COMPLETE" in msg.content else "Mission aborted."
+                        console.log_system(f"{label} Exiting.")
                         break
 
-                # --- Handle tool calls ---
                 if msg.tool_calls:
                     for call in msg.tool_calls:
                         fn_name = call.function.name
@@ -101,7 +196,6 @@ class APIOTAgent:
 
                         console.update_network(self.memory)
 
-                # --- Guard: no content and no tool calls means the model is stuck ---
                 if not msg.content and not msg.tool_calls:
                     console.log_system("Empty response from model. Exiting to avoid infinite loop.")
                     break
@@ -116,10 +210,9 @@ class APIOTAgent:
 
 if __name__ == "__main__":
     try:
-        skip = "--skip-bootstrap" in sys.argv
         no_tui = "--no-tui" in sys.argv
         agent = APIOTAgent()
-        agent.run(skip_bootstrap=skip, use_tui=not no_tui)
+        agent.run(use_tui=not no_tui)
     except Exception as e:
-        print(f"Failed to initialize Agent: {e}")
+        print(f"[APIOT] Fatal: {e}")
         sys.exit(1)

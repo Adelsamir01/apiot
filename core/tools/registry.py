@@ -150,29 +150,18 @@ TOOL_SCHEMAS = [
     {
         "type": "function",
         "function": {
-            "name": "manage_lab",
+            "name": "inspect_lab",
             "description": (
-                "Control the IoT Virtual Lab environment. Spawn new firmware targets, "
-                "check topology, kill specific devices, or reset the entire lab."
+                "Query the IoT Virtual Lab for read-only information. "
+                "View the current device topology or list the firmware library."
             ),
             "parameters": {
                 "type": "object",
                 "properties": {
                     "action": {
                         "type": "string",
-                        "enum": ["spawn", "topology", "kill", "reset", "library"],
-                        "description": "The lab management action to perform.",
-                    },
-                    "firmware_id": {
-                        "type": "string",
-                        "description": (
-                            "Firmware ID to spawn (e.g. 'zephyr_coap', 'dvrf_v03'). "
-                            "Required for 'spawn' action."
-                        ),
-                    },
-                    "run_id": {
-                        "type": "string",
-                        "description": "Run ID of the device to kill. Required for 'kill' action.",
+                        "enum": ["topology", "library"],
+                        "description": "The read-only lab query to perform.",
                     },
                 },
                 "required": ["action"],
