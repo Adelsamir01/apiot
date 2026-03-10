@@ -36,3 +36,7 @@ class LabClient:
     def get_topology(self) -> list[dict]:
         """Return list of active VM instances with IPs."""
         return self._request("GET", "/topology")
+
+    def get_ready(self) -> dict:
+        """Check lab readiness. Returns {"ready": bool, "total": int, "pending": int}."""
+        return self._request("GET", "/api/ready")

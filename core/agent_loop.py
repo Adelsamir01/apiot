@@ -69,6 +69,12 @@ TOOLS = {
         "description": "Try default creds over telnet. Args: ip, port=23",
         "packets": 3,
     },
+    "brute_force_ssh": {
+        "fn": lambda ip, **kw: linux_exploits.brute_force_ssh(ip, port=int(kw.get("port", 22))),
+        "category": "Linux",
+        "description": "Try default creds over SSH via sshpass. Args: ip, port=22",
+        "packets": 6,
+    },
 }
 
 
@@ -184,6 +190,76 @@ def cmd_verify_shell(ip: str, port: int = 23):
         })
         result["vulnerability_id"] = vuln_id
     return result
+
+
+def cmd_analyze_attacks() -> list[dict]:
+    """Blue: analyze attack log and return defensive signatures."""
+    from apiot.core.analyzer import PayloadAnalyzer
+    return PayloadAnalyzer().analyze_attack_log()
+
+
+def cmd_apply_patch(signature: dict, dry_run: bool = False) -> dict:
+    """Blue: generate and apply an iptables rule from a signature."""
+    from apiot.toolkit.defender import generate_iptables_rule, apply_patch
+    rule = generate_iptables_rule(signature)
+    result = apply_patch(rule, signature, dry_run=dry_run)
+    result["rule"] = rule
+    return result
+
+
+def cmd_verify_patch(attack_name: str, target_ip: str,
+                     known_ports: list[int] | None = None) -> dict:
+    """Blue: replay attack and confirm patch holds (target survives)."""
+    from apiot.core.verifier_blue import replay_attack, verify_patch_holds, mark_remediated
+    replay_result = replay_attack(attack_name, target_ip)
+    patch_result = verify_patch_holds(target_ip, known_ports=known_ports)
+
+    if patch_result["patch_holds"]:
+        vuln_id = hashlib.md5(f"{target_ip}:{attack_name}:patched".encode()).hexdigest()[:12]
+        rule_info = f"auto_patch_{attack_name}"
+        mark_remediated(vuln_id, target_ip, attack_name, rule_info)
+        patch_result["vulnerability_id"] = vuln_id
+        patch_result["remediation_status"] = "VERIFIED_SECURE"
+
+    return {
+        "replay": replay_result,
+        "verification": patch_result,
+    }
+
+
+def cmd_list_patches() -> dict:
+    """Blue: list current iptables FORWARD chain rules."""
+    from apiot.toolkit.defender import list_forward_rules
+    rules = list_forward_rules()
+    return {"rules": rules, "count": len(rules)}
+
+
+def cmd_remote_exec(ip: str, command: str, creds: str = "root:root",
+                    timeout: int = 30) -> dict:
+    """Execute a command on a compromised target via SSH using sshpass."""
+    user, passwd = creds.split(":", 1)
+    try:
+        result = subprocess.run(
+            [
+                "sshpass", f"-p{passwd}",
+                "ssh", "-o", "StrictHostKeyChecking=no",
+                "-o", "UserKnownHostsFile=/dev/null",
+                "-o", f"ConnectTimeout={min(timeout, 30)}",
+                f"{user}@{ip}", command,
+            ],
+            capture_output=True, text=True, timeout=timeout + 5,
+        )
+        return {
+            "exit_code": result.returncode,
+            "stdout": result.stdout[:8000],
+            "stderr": result.stderr[:2000],
+        }
+    except subprocess.TimeoutExpired:
+        return {"error": f"Command timed out after {timeout}s"}
+    except FileNotFoundError:
+        return {"error": "sshpass not installed — run: apt install sshpass"}
+    except Exception as e:
+        return {"error": str(e)}
 
 
 def cmd_evolve(ip: str, port: int = 5683):

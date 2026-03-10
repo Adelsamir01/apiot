@@ -77,6 +77,7 @@ TOOL_SCHEMAS = [
                             "coap_option_overflow",
                             "http_cmd_injection",
                             "brute_force_telnet",
+                            "brute_force_ssh",
                         ],
                         "description": "The exploit tool to use.",
                     },
@@ -165,6 +166,187 @@ TOOL_SCHEMAS = [
                     },
                 },
                 "required": ["action"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "run_command",
+            "description": (
+                "Execute a shell command on the APIOT host machine. "
+                "Use for recon (nmap, curl, netcat, ping), probing services, "
+                "or any action the built-in tools cannot cover. "
+                "Commands MUST only target lab subnets (192.168.100.0/24 and 192.168.200.0/24). "
+                "Do NOT modify host configuration or access the internet."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "command": {
+                        "type": "string",
+                        "description": "The shell command to execute (e.g. 'nmap -sV 192.168.100.10').",
+                    },
+                    "timeout": {
+                        "type": "integer",
+                        "description": "Max seconds to wait (default 30, max 120).",
+                    },
+                },
+                "required": ["command"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "create_tool",
+            "description": (
+                "Create a new Python exploit tool at runtime. Write the code, "
+                "and it will be saved, loaded, and executed immediately. "
+                "The code MUST define: def run(ip: str, port: int, **kwargs) -> dict. "
+                "The tool is then registered so you can reuse it via execute_exploit. "
+                "Use this when existing tools fail and you need a custom exploit."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Tool identifier (lowercase_snake_case, e.g. 'custom_coap_fuzz').",
+                    },
+                    "code": {
+                        "type": "string",
+                        "description": (
+                            "Python source code. Must define: "
+                            "def run(ip: str, port: int, **kwargs) -> dict"
+                        ),
+                    },
+                    "target_ip": {
+                        "type": "string",
+                        "description": "IP to immediately test the new tool against.",
+                    },
+                    "target_port": {
+                        "type": "integer",
+                        "description": "Port to immediately test the new tool against.",
+                    },
+                },
+                "required": ["name", "code", "target_ip", "target_port"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "remote_exec",
+            "description": (
+                "Execute a command on a compromised target via SSH. "
+                "Use after obtaining credentials via brute_force_ssh. "
+                "For post-exploitation: system enumeration, credential harvesting, "
+                "lateral movement, service discovery on compromised hosts."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "ip": {
+                        "type": "string",
+                        "description": "Target IP with known SSH credentials.",
+                    },
+                    "command": {
+                        "type": "string",
+                        "description": "Shell command to execute on the target.",
+                    },
+                    "creds": {
+                        "type": "string",
+                        "description": "Credentials as 'user:password' (default: root:root).",
+                    },
+                    "timeout": {
+                        "type": "integer",
+                        "description": "Max seconds to wait (default 30).",
+                    },
+                },
+                "required": ["ip", "command"],
+            },
+        },
+    },
+    # ── Blue Team Tools ──────────────────────────────────────────────
+    {
+        "type": "function",
+        "function": {
+            "name": "analyze_attacks",
+            "description": (
+                "Blue Team: Analyze the attack log and extract defensive signatures. "
+                "Returns a list of signatures with filter rules that can be applied as patches. "
+                "Call this after red team exploitation to begin the blue team phase."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "apply_patch",
+            "description": (
+                "Blue Team: Generate and apply an iptables virtual patch from a signature. "
+                "Pass the full signature object returned by analyze_attacks. "
+                "The patch is applied on the host FORWARD chain to protect lab devices."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "signature": {
+                        "type": "object",
+                        "description": "The full signature dict from analyze_attacks.",
+                    },
+                    "dry_run": {
+                        "type": "boolean",
+                        "description": "If true, generate the rule but don't apply it (default false).",
+                    },
+                },
+                "required": ["signature"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "verify_patch",
+            "description": (
+                "Blue Team: Replay the original attack against a patched target and confirm "
+                "the device SURVIVES (patch blocks the attack). If verified, marks the "
+                "vulnerability as VERIFIED_SECURE in network state."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "attack_name": {
+                        "type": "string",
+                        "description": "The attack tool name to replay (e.g. 'coap_option_overflow').",
+                    },
+                    "target_ip": {
+                        "type": "string",
+                        "description": "IP of the target to verify the patch against.",
+                    },
+                },
+                "required": ["attack_name", "target_ip"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_patches",
+            "description": (
+                "Blue Team: List all current iptables FORWARD chain rules. "
+                "Use to verify which patches are currently active."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": [],
             },
         },
     },

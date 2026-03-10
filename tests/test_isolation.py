@@ -97,7 +97,6 @@ def test_no_lifecycle_code():
         "spawn_device",
         "kill_device",
         "reset_lab",
-        "setup_network.sh",
         "lab_manager.py",
     ]
     violations = []

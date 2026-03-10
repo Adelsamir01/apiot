@@ -26,3 +26,5 @@ data/attack_log.json
 data/network_state.json
 data/remediation_log.json
 .vscode/
+data/memory.db
+data/logs/

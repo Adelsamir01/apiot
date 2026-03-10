@@ -1,123 +1,98 @@
-"""tui.py — Rich Terminal User Interface for APIOT.
+"""tui.py — Compact terminal status + comprehensive session log file.
 
-Provides a vertically split layout:
-- Left: Scrolling agent execution log (thoughts, tool calls, results).
-- Right: Live network topology and status table.
+Terminal shows short status lines (thinking, executing, result summary).
+Full details (reasoning text, args JSON, result JSON) go to the session log only.
 """
 
 import json
-from rich.console import Console, Group
-from rich.layout import Layout
-from rich.live import Live
-from rich.panel import Panel
-from rich.table import Table
+from datetime import datetime
+from pathlib import Path
+
+from rich.console import Console
 from rich.text import Text
 
+_LOGS_DIR = Path(__file__).resolve().parent.parent / "data" / "logs"
+
+_MAX_SUMMARY = 120
+
+
+def _summarize_result(result_str: str) -> str:
+    """Extract a one-line summary from a JSON tool result."""
+    try:
+        data = json.loads(result_str)
+    except (json.JSONDecodeError, TypeError):
+        return result_str[:_MAX_SUMMARY]
+
+    if isinstance(data, list):
+        return f"{len(data)} item(s)"
+
+    if isinstance(data, dict):
+        if "error" in data:
+            return f"error: {data['error'][:80]}"
+        parts = []
+        for key in ("success", "status", "verified", "exit_code", "patch_holds",
+                     "applied", "recommendation", "loss_pct", "credential",
+                     "attack", "targets", "ip"):
+            if key in data:
+                val = data[key]
+                if key == "targets" and isinstance(val, list):
+                    parts.append(f"{len(val)} target(s)")
+                else:
+                    parts.append(f"{key}={val}")
+        if parts:
+            return ", ".join(parts)
+        return f"{len(data)} field(s)"
+
+    return str(data)[:_MAX_SUMMARY]
+
+
 class OperatorConsole:
-    def __init__(self, use_tui=True):
-        self.use_tui = use_tui
+    def __init__(self):
         self.console = Console()
-        self.log_messages = []
-        self.max_log_lines = 100
-        
-        # Network state snapshot
-        self.network_state = {}
-        
-        if self.use_tui:
-            self.layout = self.make_layout()
-            self.live = Live(self.layout, refresh_per_second=4, console=self.console)
-        else:
-            self.live = None
+        _LOGS_DIR.mkdir(parents=True, exist_ok=True)
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.log_path = _LOGS_DIR / f"session_{ts}.log"
+        self._log_file = None
 
     def start(self):
-        if self.live:
-            self.live.start()
+        self._log_file = open(self.log_path, "a", encoding="utf-8")
+        self._write_log(f"=== APIOT Session started at {datetime.now().isoformat()} ===\n")
 
     def stop(self):
-        if self.live:
-            self.live.stop()
+        self._write_log(f"\n=== APIOT Session ended at {datetime.now().isoformat()} ===\n")
+        if self._log_file:
+            self._log_file.close()
+            self._log_file = None
 
-    def make_layout(self) -> Layout:
-        layout = Layout(name="root")
-        layout.split_row(
-            Layout(name="left", ratio=1),
-            Layout(name="right", ratio=1)
-        )
-        return layout
-
-    def _update_display(self):
-        if not self.use_tui:
-            return
-
-        # Render left panel
-        log_text = Text("\n\n").join(self.log_messages[-self.max_log_lines:])
-        self.layout["left"].update(Panel(log_text, title="[bold blue]Agent Flow", border_style="blue"))
-
-        # Render right panel
-        table = Table(title="Live Network Map", expand=True)
-        table.add_column("IP Address", style="cyan")
-        table.add_column("Category", style="magenta")
-        table.add_column("Status", justify="center")
-
-        hosts = self.network_state.get("fingerprints", {})
-        vulns = self.network_state.get("active_vulnerabilities", {})
-        
-        # Determine host status based on vulnerabilities
-        crashed_ips = set()
-        shell_ips = set()
-        for v in vulns.values():
-            if v.get("attack") == "crash_verified":
-                crashed_ips.add(v.get("ip"))
-            elif v.get("attack") == "shell_access":
-                shell_ips.add(v.get("ip"))
-
-        for ip, fp in hosts.items():
-            cls = fp.get("classification", {})
-            cat = cls.get("category", "Unknown")
-            
-            status = "[green]ONLINE[/green]"
-            if ip in crashed_ips:
-                status = "[red]CRASHED[/red]"
-            elif ip in shell_ips:
-                status = "[yellow]COMPROMISED[/yellow]"
-
-            table.add_row(ip, cat, status)
-
-        stats_text = Text(f"\nDiscovered Hosts: {len(hosts)} | Active Vulns: {len(vulns)}")
-        right_group = Group(table, stats_text)
-        
-        self.layout["right"].update(Panel(right_group, title="[bold green]Network & Stats", border_style="green"))
-
-    def _add_log(self, text: Text):
-        self.log_messages.append(text)
-        if len(self.log_messages) > self.max_log_lines:
-            self.log_messages.pop(0)
-        
-        if not self.use_tui:
-            self.console.print(text)
-        else:
-            self._update_display()
+    def _write_log(self, text: str):
+        if self._log_file:
+            self._log_file.write(text + "\n")
+            self._log_file.flush()
 
     def log_system(self, message: str):
-        self._add_log(Text(f"[APIOT] {message}", style="bold white"))
+        self.console.print(Text(f"  [APIOT] {message}", style="bold white"))
+        self._write_log(f"[APIOT] {message}")
 
     def log_reasoning(self, content: str):
-        self._add_log(Text(f"\n[🧠 Agent Reasoning]\n{content}", style="italic bright_white"))
+        self.console.print(Text("  [APIOT] Thinking...", style="dim cyan"))
+        self._write_log(f"\n--- Agent Reasoning ---\n{content}\n")
 
     def log_tool_call(self, name: str, args: dict):
+        args_short = ", ".join(f"{k}={v}" for k, v in args.items()) if args else ""
+        display = f"{name}({args_short})" if args_short else name
+        self.console.print(Text(f"  [APIOT] Executing: {display}", style="bold yellow"))
         args_str = json.dumps(args, indent=2)
-        self._add_log(Text(f"⚡ [Tool Call] {name}\nArgs: {args_str}", style="bold yellow"))
+        self._write_log(f">>> Tool Call: {name}\n    Args: {args_str}")
 
     def log_tool_result(self, result: str):
-        display = result[:500] + "..." if len(result) > 500 else result
-        self._add_log(Text(f"↳ [Tool Result] {display}\n", style="dim green"))
+        summary = _summarize_result(result)
+        self.console.print(Text(f"  [APIOT] Result: {summary}", style="green"))
+        self._write_log(f"<<< Tool Result:\n{result}\n")
 
     def log_error(self, message: str):
-        self._add_log(Text(f"❌ [Error] {message}", style="bold red"))
+        self.console.print(Text(f"  [ERROR] {message}", style="bold red"))
+        self._write_log(f"[ERROR] {message}")
 
-    def update_network(self, memory):
-        try:
-            self.network_state = memory.get_full_context()
-        except Exception:
-            self.network_state = {}
-        self._update_display()
+    def log_waiting(self):
+        self.console.print(Text("  [APIOT] Waiting for agent response...", style="dim"))
+        self._write_log("[APIOT] Waiting for agent response...")

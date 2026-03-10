@@ -21,9 +21,21 @@ LAB_HEALTH_INTERVAL = 2  # seconds
 def _is_lab_online() -> bool:
     """Quick health check against the lab API."""
     try:
-        resp = requests.get(f"{LAB_API_URL}/topology", timeout=3)
+        resp = requests.get(f"{LAB_API_URL}/api/ready", timeout=3)
         return resp.status_code == 200
     except (requests.ConnectionError, requests.Timeout):
+        return False
+
+
+def _is_lab_ready() -> bool:
+    """Check if the lab is fully ready (all devices booted, no pending IPs)."""
+    try:
+        resp = requests.get(f"{LAB_API_URL}/api/ready", timeout=5)
+        if resp.status_code != 200:
+            return False
+        data = resp.json()
+        return data.get("ready", False)
+    except Exception:
         return False
 
 
@@ -43,15 +55,17 @@ def ensure_lab_ready():
 
     Checks that:
       1. iot_vlab REST API is reachable.
-      2. At least one device is in the topology.
-      3. Network mapper runs successfully.
+      2. Lab reports ready (all devices booted via /api/ready).
+      3. At least one device is in the topology.
+      4. Network mapper runs successfully.
 
     Raises SystemExit on any hard failure.
     """
+    import time
+
     print("[Lab Bridge] Running pre-flight checks...")
 
     if not _is_lab_online():
-        import time
         for i in range(LAB_HEALTH_RETRIES):
             time.sleep(LAB_HEALTH_INTERVAL)
             if _is_lab_online():
@@ -62,10 +76,20 @@ def ensure_lab_ready():
                 "[Lab Bridge] iot_vlab REST API is not reachable at "
                 f"{LAB_API_URL}.\n"
                 "Start it manually before running APIOT:\n"
-                "  cd ../iot_vlab && sudo python3 lab_api.py"
+                "  cd ../iot_vlab && sudo python3 interactive_lab.py"
             )
 
     print("[Lab Bridge] Lab API is online.")
+
+    if not _is_lab_ready():
+        print("[Lab Bridge] Waiting for lab to be fully ready (devices booting)...")
+        for i in range(LAB_HEALTH_RETRIES * 3):
+            time.sleep(LAB_HEALTH_INTERVAL)
+            if _is_lab_ready():
+                break
+            print(f"[Lab Bridge] Devices still booting... ({i + 1})")
+        else:
+            print("[Lab Bridge] Warning: /api/ready did not return ready=true. Continuing with /topology fallback.")
 
     lab = LabClient(base_url=LAB_API_URL)
     topo = lab.get_topology()
@@ -76,7 +100,7 @@ def ensure_lab_ready():
             "then re-run APIOT."
         )
 
-    print(f"[Lab Bridge] Lab has {len(topo)} device(s).")
+    print(f"[Lab Bridge] Lab has {len(topo)} device(s). All ready.")
 
     _run_mapper()
     print("[Lab Bridge] Pre-flight complete. Ready for agent loop.\n")
