@@ -34,13 +34,13 @@ The test suite (`tests/test_isolation.py`) enforces this constraint and will fai
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
 │  Interactive CLI (core/cli.py)                                           │
-│  API key → Lab check → Mission select → Continuous mission loop         │
+│  API key → Lab check → Mission select → Continuous mission loop          │
 └──────────────────────────────────────────────────────────────────────────┘
                                     │
                                     ▼
 ┌──────────────────────────────────────────────────────────────────────────┐
 │  APIOT Agent Brain (core/agent.py)                                       │
-│  LLM event loop | OpenRouter client | Overseer LLM | Rich TUI console   │
+│  LLM event loop | OpenRouter client | Overseer LLM | Rich TUI console    │
 └──────────────────────────────────────────────────────────────────────────┘
                                     │
                                     ▼ (JSON tool calling)
@@ -53,7 +53,7 @@ The test suite (`tests/test_isolation.py`) enforces this constraint and will fai
                                     ▼
 ┌──────────────────────────────────────────────────────────────────────────┐
 │  Python Toolkit (toolkit/)                                               │
-│  ot_exploits, linux_exploits, verifier, recon, defender                 │
+│  ot_exploits, linux_exploits, verifier, recon, defender                  │
 └──────────────────────────────────────────────────────────────────────────┘
                                     │
                          ┌──────────┴──────────┐
@@ -62,7 +62,7 @@ The test suite (`tests/test_isolation.py`) enforces this constraint and will fai
                          │                     │
 ┌──────────────────────────────────────────────────────────────────────────┐
 │  iot_vlab — Emulated IoT Network (started & managed independently)       │
-│  QEMU ARM/MIPS/Zephyr VMs bridged to 192.168.100.0/24                  │
+│  QEMU ARM/MIPS/Zephyr VMs bridged to 192.168.100.0/24                    │
 │  REST API at http://localhost:5000                                       │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
