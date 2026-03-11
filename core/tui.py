@@ -89,6 +89,9 @@ class OperatorConsole:
         self.console.print(Text(f"  [APIOT] Result: {summary}", style="green"))
         self._write_log(f"<<< Tool Result:\n{result}\n")
 
+    def log_overseer(self, message: str):
+        self._write_log(f"[OVERSEER] {message}")
+
     def log_error(self, message: str):
         self.console.print(Text(f"  [ERROR] {message}", style="bold red"))
         self._write_log(f"[ERROR] {message}")

@@ -1,10 +1,114 @@
 [
   {
-    "timestamp": 1772725346.2878747,
+    "timestamp": 1773075213.5893364,
     "attack": "coap_option_overflow",
     "target_ip": "192.168.100.35",
     "rule": "iptables -A FORWARD -p udp --dport 5683 -m length --length 0:7 -j DROP",
     "applied": true,
-    "elapsed_s": 0.03665518760681152
+    "elapsed_s": 0.03484916687011719
+  },
+  {
+    "timestamp": 1773077831.50096,
+    "attack": "coap_option_overflow",
+    "target_ip": "192.168.100.35",
+    "rule": "iptables -A FORWARD -p udp --dport 5683 -m length --length 0:7 -j DROP",
+    "applied": true,
+    "elapsed_s": 0.010911941528320312
+  },
+  {
+    "timestamp": 1773077837.3963795,
+    "attack": "coap_option_overflow",
+    "target_ip": "192.168.100.35",
+    "rule": "iptables -A FORWARD -p udp --dport 5683 -m length --length 0:7 -j DROP",
+    "applied": true,
+    "elapsed_s": 0.015651226043701172
+  },
+  {
+    "timestamp": 1773144421.615153,
+    "attack": "coap_option_overflow",
+    "target_ip": "192.168.100.35",
+    "rule": "iptables -A FORWARD -p udp --dport 5683 -m length --length 0:7 -j DROP",
+    "applied": true,
+    "elapsed_s": 0.011781692504882812
+  },
+  {
+    "timestamp": 1773144427.5667229,
+    "attack": "http_cmd_injection",
+    "target_ip": "192.168.100.25",
+    "rule": "iptables -A FORWARD -p tcp --dport 80 -m string --string \"/bin/sh\" --algo bm -j DROP",
+    "applied": true,
+    "elapsed_s": 0.03464698791503906
+  },
+  {
+    "timestamp": 1773144431.7270763,
+    "attack": "coap_option_overflow",
+    "target_ip": "192.168.200.35",
+    "rule": "iptables -A FORWARD -p udp --dport 5683 -m length --length 0:7 -j DROP",
+    "applied": true,
+    "elapsed_s": 0.006815671920776367
+  },
+  {
+    "timestamp": 1773145262.2446113,
+    "attack": "coap_option_overflow",
+    "target_ip": "192.168.100.35",
+    "rule": "iptables -A FORWARD -p udp --dport 5683 -m length --length 0:7 -j DROP",
+    "applied": true,
+    "elapsed_s": 0.017182588577270508
+  },
+  {
+    "timestamp": 1773145278.7243204,
+    "attack": "http_cmd_injection",
+    "target_ip": "192.168.100.25",
+    "rule": "iptables -A FORWARD -p tcp --dport 80 -m string --string \"/bin/sh\" --algo bm -j DROP",
+    "applied": true,
+    "elapsed_s": 0.010007381439208984
+  },
+  {
+    "timestamp": 1773146183.7535014,
+    "attack": "coap_option_overflow",
+    "target_ip": "192.168.200.35",
+    "rule": "iptables -A FORWARD -p udp --dport 5683 -m length --length 0:7 -j DROP",
+    "applied": true,
+    "elapsed_s": 0.042920827865600586
+  },
+  {
+    "timestamp": 1773146193.7158213,
+    "attack": "http_cmd_injection",
+    "target_ip": "192.168.100.25",
+    "rule": "iptables -A FORWARD -p tcp --dport 80 -m string --string \"/bin/sh\" --algo bm -j DROP",
+    "applied": true,
+    "elapsed_s": 0.017528295516967773
+  },
+  {
+    "timestamp": 1773236738.3579724,
+    "attack": "coap_option_overflow",
+    "target_ip": "192.168.100.35",
+    "rule": "iptables -A FORWARD -p udp --dport 5683 -m length --length 0:7 -j DROP",
+    "applied": true,
+    "elapsed_s": 0.01760244369506836
+  },
+  {
+    "timestamp": 1773237284.1216319,
+    "attack": "coap_option_overflow",
+    "target_ip": "192.168.100.35",
+    "rule": "iptables -A FORWARD -p udp --dport 5683 -m length --length 0:7 -j DROP",
+    "applied": true,
+    "elapsed_s": 0.00796055793762207
+  },
+  {
+    "timestamp": 1773237288.444151,
+    "attack": "http_cmd_injection",
+    "target_ip": "192.168.100.25",
+    "rule": "iptables -A FORWARD -p tcp --dport 80 -m string --string \"/bin/sh\" --algo bm -j DROP",
+    "applied": true,
+    "elapsed_s": 0.007449626922607422
+  },
+  {
+    "timestamp": 1773237292.5144303,
+    "attack": "coap_option_overflow",
+    "target_ip": "192.168.200.35",
+    "rule": "iptables -A FORWARD -p udp --dport 5683 -m length --length 0:7 -j DROP",
+    "applied": true,
+    "elapsed_s": 0.00533747673034668
   }
 ]

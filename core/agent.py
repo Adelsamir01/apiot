@@ -8,7 +8,11 @@ to data/logs/session_<timestamp>.log.
 """
 
 import json
+import os
 import sys
+import threading
+import time
+from pathlib import Path
 from openai import OpenAI
 from apiot.core import config
 from apiot.core.state import AgentMemory
@@ -184,6 +188,22 @@ Output and reasoning format:
 
 TERMINAL_TOKENS = ("TASK_COMPLETE", "TASK_ABORTED")
 
+_HEARTBEAT_FILE = Path(__file__).resolve().parent.parent / "data" / "heartbeat.json"
+_HEARTBEAT_INTERVAL = 15  # seconds
+
+
+def _heartbeat_writer(stop_event: threading.Event):
+    """Background thread: write heartbeat.json every 15 s while the agent is running."""
+    _HEARTBEAT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    while not stop_event.is_set():
+        try:
+            _HEARTBEAT_FILE.write_text(
+                json.dumps({"active": True, "pid": os.getpid(), "ts": time.time()})
+            )
+        except OSError:
+            pass
+        stop_event.wait(_HEARTBEAT_INTERVAL)
+
 
 class APIOTAgent:
     def __init__(self, api_key: str | None = None, model: str | None = None, memory=None):
@@ -207,6 +227,10 @@ class APIOTAgent:
         if not skip_preflight:
             from apiot.core.lab_bridge import ensure_lab_ready
             ensure_lab_ready()
+
+        _hb_stop = threading.Event()
+        _hb_thread = threading.Thread(target=_heartbeat_writer, args=(_hb_stop,), daemon=True, name="apiot-heartbeat")
+        _hb_thread.start()
 
         has_memory_store = hasattr(self.memory, "start_session")
         overseer = Overseer(self.memory if has_memory_store else None)
@@ -292,7 +316,7 @@ class APIOTAgent:
 
                         blocked, reason = overseer.check_tool_call(fn_name, fn_args)
                         if blocked:
-                            console.log_system(f"[OVERSEER] {reason[:120]}")
+                            console.log_overseer(reason)
                             result_json = json.dumps({"blocked": True, "reason": reason})
                         else:
                             console.log_tool_call(fn_name, fn_args)
@@ -330,11 +354,7 @@ class APIOTAgent:
                     steering = overseer.get_steering_messages()
                     for steer_msg in steering:
                         self.messages.append(steer_msg)
-                        display = steer_msg['content'][:150]
-                        if display.startswith("[OVERSEER]"):
-                            console.log_system(display)
-                        else:
-                            console.log_system(f"[OVERSEER] {display}")
+                        console.log_overseer(steer_msg['content'])
 
                 if msg.content or msg.tool_calls:
                     empty_streak = 0
@@ -356,6 +376,7 @@ class APIOTAgent:
             hooks.emit("agent.error", {"error": str(e)})
             _end_session(f"Error: {e}", "error")
         finally:
+            _hb_stop.set()
             console.stop()
 
 

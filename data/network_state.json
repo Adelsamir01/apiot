@@ -1,22 +1,128 @@
 {
   "discovered_hosts": {
-    "192.168.100.35": {
-      "mac": "00:00:94:00:83:00",
-      "vendor": "Asante Technologies"
+    "192.168.100.27": {
+      "mac": "52:54:00:93:A4:1F",
+      "vendor": "QEMU virtual NIC"
+    },
+    "192.168.100.38": {
+      "mac": "52:54:00:BC:61:10",
+      "vendor": "QEMU virtual NIC"
     }
   },
   "fingerprints": {
-    "192.168.100.35": {
-      "ip": "192.168.100.35",
+    "192.168.100.27": {
+      "ip": "192.168.100.27",
       "ports": {
-        "4242": {
+        "22": {
           "state": "open",
           "protocol": "tcp",
-          "service": "echo",
+          "service": "ssh",
+          "version": "6.0p1 Debian 4"
+        },
+        "23": {
+          "state": "closed",
+          "protocol": "tcp",
+          "service": "telnet",
+          "version": ""
+        },
+        "80": {
+          "state": "closed",
+          "protocol": "tcp",
+          "service": "http",
+          "version": ""
+        },
+        "443": {
+          "state": "closed",
+          "protocol": "tcp",
+          "service": "https",
+          "version": ""
+        },
+        "502": {
+          "state": "closed",
+          "protocol": "tcp",
+          "service": "mbap",
+          "version": ""
+        },
+        "4242": {
+          "state": "closed",
+          "protocol": "tcp",
+          "service": "vrml-multi-use",
+          "version": ""
+        },
+        "5683": {
+          "state": "closed",
+          "protocol": "tcp",
+          "service": "coap",
           "version": ""
         }
       },
-      "os_guess": null
+      "os_guess": null,
+      "classification": {
+        "category": "Linux Gateway/Router",
+        "os_guess": "Linux (Debian-based)",
+        "arch_guess": "MIPS or ARM",
+        "role": "IoT Gateway",
+        "attack_surface": [
+          "brute_force_ssh"
+        ]
+      }
+    },
+    "192.168.100.38": {
+      "ip": "192.168.100.38",
+      "ports": {
+        "22": {
+          "state": "open",
+          "protocol": "tcp",
+          "service": "ssh",
+          "version": "6.0p1 Debian 4"
+        },
+        "23": {
+          "state": "closed",
+          "protocol": "tcp",
+          "service": "telnet",
+          "version": ""
+        },
+        "80": {
+          "state": "closed",
+          "protocol": "tcp",
+          "service": "http",
+          "version": ""
+        },
+        "443": {
+          "state": "closed",
+          "protocol": "tcp",
+          "service": "https",
+          "version": ""
+        },
+        "502": {
+          "state": "closed",
+          "protocol": "tcp",
+          "service": "mbap",
+          "version": ""
+        },
+        "4242": {
+          "state": "closed",
+          "protocol": "tcp",
+          "service": "vrml-multi-use",
+          "version": ""
+        },
+        "5683": {
+          "state": "closed",
+          "protocol": "tcp",
+          "service": "coap",
+          "version": ""
+        }
+      },
+      "os_guess": null,
+      "classification": {
+        "category": "Linux Gateway/Router",
+        "os_guess": "Linux (Debian-based)",
+        "arch_guess": "MIPS or ARM",
+        "role": "IoT Gateway",
+        "attack_surface": [
+          "brute_force_ssh"
+        ]
+      }
     }
   },
   "active_vulnerabilities": {}
