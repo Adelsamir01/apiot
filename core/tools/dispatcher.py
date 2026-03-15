@@ -13,15 +13,19 @@ from apiot.core.agent_loop import (
     cmd_get_state,
     cmd_get_targets,
     cmd_stealth_check,
-    cmd_attack,
+    cmd_coap_send,
+    cmd_modbus_request,
+    cmd_tcp_send,
+    cmd_udp_send,
     cmd_verify_crash,
     cmd_verify_shell,
     cmd_remote_exec,
-    cmd_analyze_attacks,
-    cmd_apply_patch,
+    cmd_iptables_rule,
+    cmd_protocol_block,
+    cmd_modbus_fc_filter,
+    cmd_coap_rate_limit,
     cmd_verify_patch,
     cmd_list_patches,
-    TOOLS,
 )
 from apiot.core.evolve import load_dynamic_tool
 from apiot.toolkit.lab_client import LabClient
@@ -55,13 +59,48 @@ def _dispatch(name: str, args: dict) -> dict | list:
     elif name == "stealth_check":
         return cmd_stealth_check(args["ip"])
 
-    elif name == "execute_exploit":
-        kwargs = {}
-        if "port" in args:
-            kwargs["port"] = str(args["port"])
-        if "options" in args and isinstance(args["options"], dict):
-            kwargs.update(args["options"])
-        return cmd_attack(args["tool_name"], args["ip"], **kwargs)
+    # ── Red Team — Protocol Primitives ────────────────────────────────
+    elif name == "coap_send":
+        return cmd_coap_send(
+            ip=args["ip"],
+            port=args.get("port", 5683),
+            ver=args.get("ver", 1),
+            msg_type=args.get("msg_type", 0),
+            code=args.get("code", 1),
+            msg_id=args.get("msg_id", 0x1234),
+            token_hex=args.get("token_hex", ""),
+            options_hex=args.get("options_hex", ""),
+            payload_hex=args.get("payload_hex", ""),
+            timeout=args.get("timeout", 5.0),
+        )
+
+    elif name == "modbus_request":
+        return cmd_modbus_request(
+            ip=args["ip"],
+            port=args.get("port", 502),
+            function_code=args.get("function_code", 0x03),
+            data_hex=args.get("data_hex", "00 00 00 01"),
+            unit_id=args.get("unit_id", 1),
+            transaction_id=args.get("transaction_id", 1),
+            claimed_length=args.get("claimed_length", None),
+            timeout=args.get("timeout", 5.0),
+        )
+
+    elif name == "tcp_send":
+        return cmd_tcp_send(
+            ip=args["ip"],
+            port=args["port"],
+            payload_hex=args["payload_hex"],
+            timeout=args.get("timeout", 5.0),
+        )
+
+    elif name == "udp_send":
+        return cmd_udp_send(
+            ip=args["ip"],
+            port=args["port"],
+            payload_hex=args["payload_hex"],
+            timeout=args.get("timeout", 5.0),
+        )
 
     elif name == "verify_crash":
         return cmd_verify_crash(args["ip"])
@@ -86,14 +125,48 @@ def _dispatch(name: str, args: dict) -> dict | list:
     elif name == "create_tool":
         return _dispatch_create_tool(args)
 
-    elif name == "analyze_attacks":
-        return cmd_analyze_attacks()
+    # ── Blue Team — Defensive Primitives ─────────────────────────────
+    elif name == "iptables_rule":
+        return cmd_iptables_rule(
+            chain=args.get("chain", "FORWARD"),
+            protocol=args["protocol"],
+            dport=args["dport"],
+            match_type=args.get("match_type", "plain"),
+            match_value=args.get("match_value", ""),
+            algo=args.get("algo", "bm"),
+            verdict=args.get("verdict", "DROP"),
+            op=args.get("op", "add"),
+        )
 
-    elif name == "apply_patch":
-        return cmd_apply_patch(args["signature"], dry_run=args.get("dry_run", False))
+    elif name == "protocol_block":
+        return cmd_protocol_block(
+            protocol=args["protocol"],
+            dport=args["dport"],
+            direction=args.get("direction", "both"),
+        )
+
+    elif name == "modbus_fc_filter":
+        return cmd_modbus_fc_filter(
+            function_code=args["function_code"],
+            dport=args.get("dport", 502),
+            chain=args.get("chain", "FORWARD"),
+        )
+
+    elif name == "coap_rate_limit":
+        return cmd_coap_rate_limit(
+            dport=args.get("dport", 5683),
+            rate=args.get("rate", "10/sec"),
+            burst=args.get("burst", 20),
+            chain=args.get("chain", "FORWARD"),
+        )
 
     elif name == "verify_patch":
-        return cmd_verify_patch(args["attack_name"], args["target_ip"])
+        return cmd_verify_patch(
+            target_ip=args["target_ip"],
+            protocol=args["protocol"],
+            port=args["port"],
+            payload_hex=args["payload_hex"],
+        )
 
     elif name == "list_patches":
         return cmd_list_patches()
@@ -173,13 +246,6 @@ def _dispatch_create_tool(args: dict) -> dict:
             "tool_path": str(filepath),
             "registered": False,
         }
-
-    TOOLS[name] = {
-        "fn": lambda ip, _mod=mod, **kw: _mod.run(ip, int(kw.get("port", target_port)), **kw),
-        "category": "Dynamic",
-        "description": f"Agent-created tool: {name}",
-        "packets": 1,
-    }
 
     return {
         "success": True,

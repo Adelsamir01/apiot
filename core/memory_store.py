@@ -44,7 +44,11 @@ CREATE TABLE IF NOT EXISTS tool_history (
     args_json       TEXT,
     result_summary  TEXT,
     success         INTEGER,
-    created_at      REAL
+    created_at      REAL,
+    turn_number     INTEGER DEFAULT 0,
+    overseer_flag   TEXT    DEFAULT 'none',
+    token_count     INTEGER DEFAULT 0,
+    mission_phase   TEXT    DEFAULT 'red'
 );
 
 CREATE TABLE IF NOT EXISTS patches (
@@ -85,7 +89,24 @@ class MemoryStore:
         self._conn = sqlite3.connect(self._db_path)
         self._conn.row_factory = _row_to_dict
         self._conn.executescript(_SCHEMA)
+        self._migrate_tool_history()
         self._conn.commit()
+
+    def _migrate_tool_history(self) -> None:
+        """Add EXT4 columns to tool_history if they don't exist yet (idempotent)."""
+        cur = self._conn.execute("PRAGMA table_info(tool_history)")
+        existing = {row["name"] for row in cur.fetchall()}
+        migrations = [
+            ("turn_number",   "INTEGER DEFAULT 0"),
+            ("overseer_flag", "TEXT    DEFAULT 'none'"),
+            ("token_count",   "INTEGER DEFAULT 0"),
+            ("mission_phase", "TEXT    DEFAULT 'red'"),
+        ]
+        for col, typedef in migrations:
+            if col not in existing:
+                self._conn.execute(
+                    f"ALTER TABLE tool_history ADD COLUMN {col} {typedef}"
+                )
 
     # ------------------------------------------------------------------
     # Sessions
@@ -172,12 +193,18 @@ class MemoryStore:
         args: dict,
         result_summary: str,
         success: bool,
+        turn_number: int = 0,
+        overseer_flag: str = "none",
+        token_count: int = 0,
+        mission_phase: str = "red",
     ) -> None:
         self._conn.execute(
             """INSERT INTO tool_history
-               (session_id, ip, tool_name, args_json, result_summary, success, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?)""",
-            (session_id, ip, tool_name, json.dumps(args), result_summary, int(success), time.time()),
+               (session_id, ip, tool_name, args_json, result_summary, success, created_at,
+                turn_number, overseer_flag, token_count, mission_phase)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (session_id, ip, tool_name, json.dumps(args), result_summary, int(success), time.time(),
+             turn_number, overseer_flag, token_count, mission_phase),
         )
         self._conn.commit()
 

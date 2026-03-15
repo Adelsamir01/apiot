@@ -39,12 +39,12 @@ def test_repetition_guard():
     args = {"ip": "10.0.0.1", "tool_name": "brute_force_ssh"}
 
     for i in range(3):
-        blocked, reason = o.check_tool_call("execute_exploit", args)
+        blocked, reason, _ = o.check_tool_call("execute_exploit", args)
         o.evaluate_result("execute_exploit", args, '{"success": false}', False)
         if i < 2:
             check(f"Call {i+1} not blocked", not blocked)
 
-    blocked, reason = o.check_tool_call("execute_exploit", args)
+    blocked, reason, _ = o.check_tool_call("execute_exploit", args)
     check("Call 4 (same args) is blocked", blocked)
     check("Block reason mentions repeated", "repeated" in reason.lower() or "BLOCKED" in reason)
 
@@ -59,7 +59,7 @@ def test_different_args_not_blocked():
 
     for port in [22, 23, 80]:
         args = {"ip": "10.0.0.1", "tool_name": "brute_force_ssh", "port": port}
-        blocked, _ = o.check_tool_call("execute_exploit", args)
+        blocked, _, _flag = o.check_tool_call("execute_exploit", args)
         o.evaluate_result("execute_exploit", args, '{"success": false}', False)
         check(f"Port {port} not blocked", not blocked)
 
@@ -73,7 +73,7 @@ def test_crashed_target_blocked():
     m.upsert_device_profile("10.0.0.1", status="crashed")
     o = Overseer(m)
 
-    blocked, reason = o.check_tool_call("execute_exploit", {"ip": "10.0.0.1", "tool_name": "ssh"})
+    blocked, reason, _ = o.check_tool_call("execute_exploit", {"ip": "10.0.0.1", "tool_name": "ssh"})
     check("Crashed target blocked", blocked)
     check("Reason mentions crashed", "crashed" in reason.lower())
 
@@ -89,7 +89,7 @@ def test_patched_attack_blocked():
     m.log_patch(fid, "10.0.0.1", "brute_force_ssh", "iptables...", {}, verified=True)
     o = Overseer(m)
 
-    blocked, reason = o.check_tool_call("execute_exploit", {"ip": "10.0.0.1", "tool_name": "brute_force_ssh"})
+    blocked, reason, _ = o.check_tool_call("execute_exploit", {"ip": "10.0.0.1", "tool_name": "brute_force_ssh"})
     check("Patched attack blocked", blocked)
     check("Reason mentions patch", "patch" in reason.lower())
 
@@ -250,7 +250,7 @@ def test_no_memory_graceful():
     from apiot.core.oversight import Overseer
 
     o = Overseer(None)
-    blocked, _ = o.check_tool_call("execute_exploit", {"ip": "10.0.0.1", "tool_name": "ssh"})
+    blocked, _, _flag = o.check_tool_call("execute_exploit", {"ip": "10.0.0.1", "tool_name": "ssh"})
     check("No crash without memory", not blocked)
 
     enriched = o.evaluate_result("execute_exploit", {"ip": "10.0.0.1"},
@@ -605,6 +605,60 @@ def test_diversity_check_does_not_fire_when_diverse():
     check("No diversity alert when tools are varied", len(diversity_msgs) == 0)
 
 
+def test_check_tool_call_returns_3tuple():
+    print("\n--- Overseer: check_tool_call returns 3-tuple (EXT4) ---")
+    from apiot.core.memory_store import MemoryStore
+    from apiot.core.oversight import Overseer
+
+    m = MemoryStore(":memory:")
+    o = Overseer(m)
+
+    result = o.check_tool_call("execute_exploit", {"ip": "10.0.0.1", "tool_name": "ssh"})
+    check("Returns 3-tuple", len(result) == 3)
+    blocked, reason, flag = result
+    check("Not blocked initially", not blocked)
+    check("Flag is string", isinstance(flag, str))
+    check("Flag is 'none' with no pending", flag == "none")
+
+
+def test_overseer_flag_on_blocked_calls():
+    print("\n--- Overseer: overseer_flag set correctly on blocked calls (EXT4) ---")
+    from apiot.core.memory_store import MemoryStore
+    from apiot.core.oversight import Overseer
+
+    m = MemoryStore(":memory:")
+    m.upsert_device_profile("10.0.0.1", status="crashed")
+    o = Overseer(m)
+
+    _, _, flag = o.check_tool_call("execute_exploit", {"ip": "10.0.0.1", "tool_name": "ssh"})
+    check("blocked_crashed flag set", flag == "blocked_crashed")
+
+    m2 = MemoryStore(":memory:")
+    o2 = Overseer(m2)
+    args = {"ip": "10.0.0.2", "tool_name": "brute_force_ssh"}
+    for _ in range(3):
+        o2.check_tool_call("execute_exploit", args)
+        o2.evaluate_result("execute_exploit", args, '{"success": false}', False)
+    _, _, flag2 = o2.check_tool_call("execute_exploit", args)
+    check("blocked_repeat flag set", flag2 == "blocked_repeat")
+
+
+def test_no_overseer_agent_mode():
+    print("\n--- EXT1: APIOTAgent with overseer_enabled=False skips all overseer calls ---")
+    import inspect
+    from apiot.core.agent import APIOTAgent
+
+    # Verify __init__ accepts overseer_enabled
+    import inspect as _inspect
+    sig = _inspect.signature(APIOTAgent.__init__)
+    check("overseer_enabled param exists", "overseer_enabled" in sig.parameters)
+    check("overseer_enabled defaults to True", sig.parameters["overseer_enabled"].default is True)
+
+    src = inspect.getsource(APIOTAgent.run)
+    check("overseer_enabled guard present in run()", "overseer_enabled" in src)
+    check("--no-overseer logged", "DISABLED" in src)
+
+
 def test_agent_prompt_mentions_overseer_priority():
     print("\n--- Integration: agent system prompt prioritizes Overseer ---")
     from apiot.core.agent import SYSTEM_PROMPT
@@ -646,6 +700,10 @@ def main():
     test_diversity_check_fires()
     test_diversity_check_does_not_fire_when_diverse()
     test_agent_prompt_mentions_overseer_priority()
+    # EXT1 + EXT4 tests
+    test_check_tool_call_returns_3tuple()
+    test_overseer_flag_on_blocked_calls()
+    test_no_overseer_agent_mode()
 
     print(f"\n{'='*50}")
     print(f"Results: {PASS} passed, {FAIL} failed out of {PASS + FAIL}")

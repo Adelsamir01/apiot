@@ -110,5 +110,27 @@
     "rule": "iptables -A FORWARD -p udp --dport 5683 -m length --length 0:7 -j DROP",
     "applied": true,
     "elapsed_s": 0.00533747673034668
+  },
+  {
+    "timestamp": 1773588664.8516293,
+    "attack": "coap_option_overflow",
+    "target_ip": "192.168.100.100",
+    "rule": "iptables -A FORWARD -p udp --dport 5683 -m length --length 0:7 -j DROP",
+    "applied": true,
+    "elapsed_s": 0.03143882751464844
+  },
+  {
+    "timestamp": 1773591889.096649,
+    "rule": "iptables -A FORWARD -p udp --dport 5683 -m string --hex-string \"|DD|\" --algo bm -j DROP",
+    "description": "hex_string match on udp/5683",
+    "applied": true,
+    "elapsed_s": 1.4066696166992188e-05
+  },
+  {
+    "timestamp": 1773591889.0968893,
+    "rule": "iptables -A FORWARD -p tcp --dport 502 -m u32 --u32 \"0>>22&0x3C@7&0xFF=0x05\" -j DROP",
+    "description": "Modbus FC 5 (0x05) block on TCP/502",
+    "applied": true,
+    "elapsed_s": 1.1205673217773438e-05
   }
 ]

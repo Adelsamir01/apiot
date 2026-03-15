@@ -105,70 +105,93 @@ Autonomy and behavior:
   3. If topology is empty or unreachable, explain the issue, suggest how the human can fix it, then output TASK_ABORTED and stop.
 
 Tool usage rules:
-- You have the following built-in tools:
-  - get_network_state — full network state from last mapper run.
-  - get_actionable_targets — filtered targets with attack surfaces.
-  - stealth_check — ping-based packet loss measurement.
-  - execute_exploit — fire a named exploit (modbus_write_coil, modbus_mbap_overflow, coap_option_overflow, http_cmd_injection, brute_force_telnet, brute_force_ssh, plus any tools you create).
-  - verify_crash — check if a target crashed post-exploit.
-  - verify_shell — check if shell access was obtained.
-  - inspect_lab — read-only lab topology or firmware library query.
-  - run_command — execute ANY shell command on the host (nmap, curl, netcat, python3, etc.). Use this for recon, probing, or anything the built-in tools cannot do.
-  - create_tool — write a new Python exploit tool at runtime. It gets saved, loaded, executed immediately, and registered for reuse via execute_exploit.
-- Blue Team tools (use after red phase):
-  - analyze_attacks — scan the attack log and extract defensive signatures for every confirmed exploit.
-  - apply_patch — generate and apply an iptables virtual patch from a signature.
-  - verify_patch — replay the original attack to confirm the patch blocks it (target survives).
-  - list_patches — list all active iptables FORWARD chain rules.
-- You MUST:
-  - Use tools for ALL observations; never fabricate scan or exploit results.
+You have protocol primitives for both red and blue work. These require you to reason about
+protocol structure — you build the packets and rules yourself based on what you observe.
+
+RED TEAM PRIMITIVES:
+  - coap_send     — Send a CoAP datagram (UDP, default port 5683).
+                    Control: ver, msg_type, code, msg_id, token_hex, options_hex, payload_hex.
+                    Start with a normal GET (code=1, no options) to fingerprint the device.
+                    Then explore malformed options (e.g., options_hex='DD FF FF' for delta/length overflow).
+  - modbus_request — Send a Modbus/TCP PDU (TCP, default port 502).
+                    Control: function_code, data_hex, unit_id, claimed_length.
+                    Start with FC 0x03 Read Holding Registers to fingerprint.
+                    Then try anomalous claimed_length values (e.g. 2048) to test MBAP parser.
+  - tcp_send      — Send raw bytes over TCP (for non-Modbus TCP services or custom payloads).
+  - udp_send      — Send raw bytes over UDP (for non-CoAP UDP services or custom payloads).
+  - verify_crash  — Check if a target crashed post-exploit. Call after EVERY probe that might crash.
+  - verify_shell  — Check if shell access was obtained on a target.
+  - run_command   — Execute ANY shell command on the host (nmap, curl, netcat, python3, etc.).
+  - create_tool   — Write a new Python exploit tool at runtime (when primitives are insufficient).
+  - inspect_lab   — Read-only lab topology or firmware library query.
+
+BLUE TEAM PRIMITIVES (use after red phase):
+  - iptables_rule     — Add/remove one iptables rule. You specify: protocol, dport, match_type,
+                        and match_value. Applied to both FORWARD and INPUT chains automatically.
+                        Example: block the 0xDD byte that crashed CoAP:
+                          protocol='udp', dport=5683, match_type='hex_string', match_value='DD'
+                        Example: block oversized MBAP length field:
+                          protocol='tcp', dport=502, match_type='hex_string', match_value='08 00'
+  - protocol_block    — Blanket DROP on a protocol+port (less precise than iptables_rule).
+  - modbus_fc_filter  — Block a specific Modbus Function Code using u32 payload match.
+                        Example: filter FC 5 (Write Single Coil) while keeping reads working.
+  - coap_rate_limit   — Rate-limit CoAP UDP traffic using hashlimit (per source IP).
+  - verify_patch      — Replay the exact payload_hex that caused the crash. After ~10s watchdog
+                        reset, resend and check if device survives. Pass the same payload_hex
+                        you used in the original crash-triggering probe.
+  - list_patches      — List all active iptables FORWARD chain rules.
+
+REASONING APPROACH — YOU MUST:
+  - Use tools for ALL observations; never fabricate results.
   - Treat every tool result as ground truth for your next decisions.
-  - After every exploit, ALWAYS call a verification tool (verify_crash or verify_shell) before deciding the outcome.
-- When to use run_command:
-  - For deeper recon (e.g. nmap service detection, banner grabbing, protocol-specific probes).
-  - For quick one-off actions that don't need a full exploit tool.
-  - For interacting with services in ways the built-in tools don't support.
-- When to use create_tool:
-  - When existing exploit tools fail against a target and you have a hypothesis for a different approach.
-  - When you discover a service or protocol not covered by built-in tools.
-  - The code must define: def run(ip: str, port: int, **kwargs) -> dict
-  - Keep created tools focused and minimal.
+  - After every probe that may crash a device, ALWAYS call verify_crash.
+  - When crafting exploits, reason explicitly about the protocol:
+    - For CoAP: CoAP options use delta-length-value encoding. The first nibble is the option delta,
+      the second nibble is the option length. Value 13 (0xD) means "read next byte as extended value".
+      So option byte 0xDD means delta=extended, length=extended — the parser reads 2 extension bytes
+      but if you provide no actual option value, it reads past the datagram boundary.
+    - For Modbus: The MBAP header's Length field (bytes 4-5, big-endian) tells the receiver how many
+      bytes follow. If you claim 2048 (0x08 0x00) but only send 6 bytes, a vulnerable parser attempts
+      to read 2042 bytes that don't exist.
+  - When crafting patches, reason explicitly about the signature:
+    - Use hex_string matching on the specific byte(s) that make an exploit unique.
+    - Use u32 matching for FC-level Modbus filtering.
+    - Prefer surgical per-exploit rules over blanket port blocks.
 
 Mission flow — Purple Team (Red then Blue):
 You operate as a Purple Team agent. Your mission has TWO phases that run in sequence:
 
 PHASE 1 — RED TEAM (Offensive):
 1. Discovery:
-   - Start by calling get_actionable_targets to see what is currently on the network and what attack surfaces are available.
-   - Use inspect_lab topology to see ALL devices, including those the mapper may not have reached.
-   - Use run_command with nmap to probe devices that appear in topology but not in the network state.
+   - Start by calling get_actionable_targets and inspect_lab topology.
+   - Use run_command with nmap to probe devices visible in topology but not in network state.
    - If no actionable targets exist after thorough recon, conclude the mission and output TASK_COMPLETE.
 2. Target selection:
-   - Prioritize bare-metal OT sensors (Zephyr/PLC/CoAP) before Linux gateways, unless tool outputs explicitly indicate a better priority.
+   - Prioritize bare-metal OT sensors (Zephyr/CoAP/Modbus) before Linux gateways.
    - Avoid over-focusing on a single host when other unexplored targets remain.
 3. Exploitation:
-   - For each chosen target, pick the most appropriate exploit from its advertised attack surface.
-   - Call execute_exploit with minimal necessary options.
-   - Immediately follow each exploit with verify_crash or verify_shell for the same IP.
-   - If verification shows success (crash or shell), record that mentally and move on; do not over-exploit the same target.
-   - If all built-in exploits fail against a target, consider using run_command for manual probing, or create_tool to build a custom exploit.
+   - For CoAP devices (port 5683): start with a normal GET probe, then send malformed options.
+   - For Modbus devices (port 502): start with FC 0x03 read probe, then test MBAP overflow and FC 0x05 write.
+   - After each crash-inducing probe, call verify_crash immediately.
+   - If verified crashed, record the payload_hex that triggered it (you will need it for verify_patch).
+   - If all primitives fail, consider run_command for manual probing or create_tool for a custom exploit.
 4. Stealth and safety:
-   - Before noisy actions, optionally use stealth_check to gauge packet loss and decide whether to throttle or skip.
-   - Avoid repeated high-volume actions against unstable or already-crashed devices.
+   - Optionally use stealth_check before noisy actions.
+   - Avoid repeated probes against already-crashed devices.
 
 PHASE 2 — BLUE TEAM (Defensive):
-After exploiting all reachable targets, AUTOMATICALLY switch to the blue team phase. Do NOT output TASK_COMPLETE until the blue phase is done.
-1. Analyze:
-   - Call analyze_attacks to extract defensive signatures from the attack log.
-   - Review each signature — it contains the attack type, protocol, port, and a filter rule.
-2. Patch:
-   - For EACH signature, call apply_patch with the full signature object.
-   - This generates and applies an iptables rule on the host FORWARD chain.
-3. Verify:
-   - For EACH patch applied, call verify_patch with the attack_name and target_ip.
-   - This replays the original exploit and confirms the target survives (the patch blocks it).
-   - If verification succeeds, the vulnerability is marked VERIFIED_SECURE.
-4. Report:
+After exploiting all reachable targets, AUTOMATICALLY switch to the blue team phase.
+Do NOT output TASK_COMPLETE until the blue phase is done.
+1. Patch:
+   - For each confirmed crash, reason about what byte sequence made the exploit unique.
+   - Use iptables_rule (or modbus_fc_filter / coap_rate_limit) to block that specific pattern.
+   - Apply the patch immediately; no separate "analyze" step is needed.
+2. Verify:
+   - For EACH patch applied, wait ~12 seconds (device watchdog reboot), then call verify_patch
+     with the EXACT payload_hex that caused the original crash.
+   - If the device survives: the vulnerability is marked VERIFIED_SECURE.
+   - If the device crashes again: the patch failed — refine the iptables rule and retry.
+3. Report:
    - Call list_patches to show all active iptables rules.
    - Summarize: how many vulnerabilities found, how many patched, how many verified.
 
@@ -206,9 +229,11 @@ def _heartbeat_writer(stop_event: threading.Event):
 
 
 class APIOTAgent:
-    def __init__(self, api_key: str | None = None, model: str | None = None, memory=None):
+    def __init__(self, api_key: str | None = None, model: str | None = None, memory=None,
+                 overseer_enabled: bool = True):
         self.api_key = api_key or config.require_openrouter_api_key()
         self.model = model or config.get_llm_model()
+        self.overseer_enabled = overseer_enabled
         self.client = OpenAI(
             base_url="https://openrouter.ai/api/v1",
             api_key=self.api_key,
@@ -253,6 +278,8 @@ class APIOTAgent:
         console.start()
         empty_streak = 0
         max_empty = 3
+        turn_number = 0
+        mission_phase = "red"
 
         def _end_session(summary: str, outcome: str):
             if has_memory_store and self.session_id:
@@ -268,7 +295,10 @@ class APIOTAgent:
             console.log_system(f"Session log: {console.log_path}")
             if self.session_id:
                 console.log_system(f"Session ID: {self.session_id[:12]}...")
-            console.log_system("Overseer active — reasoning oversight enabled.")
+            if self.overseer_enabled:
+                console.log_system("Overseer active — reasoning oversight enabled.")
+            else:
+                console.log_system("Overseer DISABLED — running without oversight (--no-overseer).")
             console.log_system("Entering main event loop...\n")
 
             while True:
@@ -284,6 +314,8 @@ class APIOTAgent:
                     messages=self.messages,
                     tools=TOOL_SCHEMAS,
                 )
+                turn_number += 1
+                turn_token_count = getattr(response.usage, "total_tokens", 0) if response.usage else 0
 
                 msg = response.choices[0].message
                 self.messages.append(msg)
@@ -314,7 +346,11 @@ class APIOTAgent:
 
                         hooks.emit("tool.before_call", {"tool": fn_name, "args": fn_args})
 
-                        blocked, reason = overseer.check_tool_call(fn_name, fn_args)
+                        if self.overseer_enabled:
+                            blocked, reason, overseer_flag = overseer.check_tool_call(fn_name, fn_args)
+                        else:
+                            blocked, reason, overseer_flag = False, "", "none"
+
                         if blocked:
                             console.log_overseer(reason)
                             result_json = json.dumps({"blocked": True, "reason": reason})
@@ -328,11 +364,19 @@ class APIOTAgent:
                             console.log_tool_result(result_json)
                         hooks.emit("tool.after_call", {"tool": fn_name, "result": result_json[:500]})
 
+                        if fn_name == "analyze_attacks" and not blocked:
+                            mission_phase = "blue"
+
                         if has_memory_store and self.session_id and not blocked:
                             ip = fn_args.get("ip", fn_args.get("target_ip", ""))
                             self.memory.log_tool_call(
                                 self.session_id, ip, fn_name, fn_args,
-                                result_json[:500], success)
+                                result_json[:500], success,
+                                turn_number=turn_number,
+                                overseer_flag=overseer_flag,
+                                token_count=turn_token_count,
+                                mission_phase=mission_phase,
+                            )
 
                         if fn_name == "get_actionable_targets" and not blocked:
                             try:
@@ -343,7 +387,10 @@ class APIOTAgent:
                             except (json.JSONDecodeError, TypeError):
                                 pass
 
-                        enriched = overseer.evaluate_result(fn_name, fn_args, result_json, success)
+                        if self.overseer_enabled:
+                            enriched = overseer.evaluate_result(fn_name, fn_args, result_json, success)
+                        else:
+                            enriched = result_json
 
                         self.messages.append({
                             "role": "tool",
@@ -351,10 +398,11 @@ class APIOTAgent:
                             "content": truncate_result_for_history(enriched),
                         })
 
-                    steering = overseer.get_steering_messages()
-                    for steer_msg in steering:
-                        self.messages.append(steer_msg)
-                        console.log_overseer(steer_msg['content'])
+                    if self.overseer_enabled:
+                        steering = overseer.get_steering_messages()
+                        for steer_msg in steering:
+                            self.messages.append(steer_msg)
+                            console.log_overseer(steer_msg['content'])
 
                 if msg.content or msg.tool_calls:
                     empty_streak = 0
@@ -401,9 +449,16 @@ def _check_success(result_json: str) -> bool:
 
 
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="APIOT autonomous purple-team agent")
+    parser.add_argument("--no-tui", action="store_true", help="Disable rich TUI; plain stdout")
+    parser.add_argument("--no-overseer", action="store_true", help="Disable overseer oversight (ablation mode)")
+    parser.add_argument("--mode", default="full_purple", help="Mission mode (default: full_purple)")
+    args = parser.parse_args()
+
     try:
-        agent = APIOTAgent()
-        agent.run()
+        agent = APIOTAgent(overseer_enabled=not args.no_overseer)
+        agent.run(mode=args.mode)
     except Exception as e:
         print(f"[APIOT] Fatal: {e}")
         sys.exit(1)

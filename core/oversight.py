@@ -89,6 +89,7 @@ class Overseer:
         self._overseer_model = os.environ.get("OVERSEER_MODEL", "openai/gpt-4o-mini")
         self._overseer_enabled = os.environ.get("OVERSEER_ENABLED", "true").lower() == "true"
         self._llm_client: OpenAI | None = None
+        self._pending_flag: str | None = None  # EXT4: steering type to attach to next tool call
 
     def _get_llm_client(self) -> OpenAI | None:
         """Lazy-init the Overseer's own LLM client."""
@@ -217,11 +218,21 @@ class Overseer:
 
     # ── Pre-dispatch: should we block this call? ──────────────────────
 
-    def check_tool_call(self, tool: str, args: dict) -> tuple[bool, str]:
+    def check_tool_call(self, tool: str, args: dict) -> tuple[bool, str, str]:
         """Check if a tool call should be blocked.
 
-        Returns (blocked: bool, reason: str).
+        Returns (blocked: bool, reason: str, overseer_flag: str).
         Deterministic — no LLM calls here for speed.
+
+        overseer_flag values:
+          'none'            — call allowed, no intervention
+          'blocked_repeat'  — repetition guard blocked this call
+          'blocked_crashed' — target already crashed
+          'blocked_patched' — attack already has verified patch
+          'stall_steer'     — stall steering was injected before this turn
+          'phase_enforce'   — phase transition was enforced before this turn
+          'strategy_refresh'— strategy refresh was injected before this turn
+          'disabled'        — overseer is disabled (set by agent, not here)
         """
         ip = args.get("ip", args.get("target_ip", ""))
         call_hash = _hash_call(tool, ip, args)
@@ -233,13 +244,15 @@ class Overseer:
                 f"Try a different tool, different parameters, or a different target."
             )
             logger.info(reason)
-            return True, reason
+            self._pending_flag = None
+            return True, reason, "blocked_repeat"
 
         if ip and self.memory:
             profile = self.memory.get_device_profile(ip)
             if profile and profile.get("status") == "crashed" and tool in RED_EXPLOITS:
                 reason = f"BLOCKED: Target {ip} is already crashed. Move to another target."
-                return True, reason
+                self._pending_flag = None
+                return True, reason, "blocked_crashed"
 
             if tool == "execute_exploit":
                 attack = args.get("tool_name", "")
@@ -248,9 +261,13 @@ class Overseer:
                         f"BLOCKED: Attack '{attack}' on {ip} already has a verified patch. "
                         f"Try a different attack vector."
                     )
-                    return True, reason
+                    self._pending_flag = None
+                    return True, reason, "blocked_patched"
 
-        return False, ""
+        # Call allowed — attach any pending steering flag
+        flag = self._pending_flag or "none"
+        self._pending_flag = None
+        return False, "", flag
 
     # ── Post-dispatch: evaluate result and enrich ─────────────────────
 
@@ -369,6 +386,7 @@ class Overseer:
             )
             directive = analysis or "Transition to blue team phase NOW, or output TASK_COMPLETE if no findings."
             msgs.append({"role": "user", "content": self._wrap_directive(directive)})
+            self._pending_flag = "stall_steer"  # EXT4: tag next tool call
             hooks.emit("phase.red_complete", {"reason": "stall_hard_limit", "turn": self.turn})
         elif gap >= STALL_THRESHOLD:
             analysis = self._call_overseer_llm(
@@ -378,6 +396,7 @@ class Overseer:
             directive = analysis or self._build_stall_hint_heuristic()
             msgs.append({"role": "user", "content": self._wrap_directive(
                 f"No new findings in {gap} turns. {directive}")})
+            self._pending_flag = "stall_steer"  # EXT4: tag next tool call
 
     def _check_phase_transition(self, msgs: list[dict]):
         if self.phase != "red":
@@ -401,6 +420,7 @@ class Overseer:
                 f"Begin BLUE TEAM phase: call analyze_attacks, then apply_patch and verify_patch for each."
             )
             msgs.append({"role": "user", "content": self._wrap_directive(directive)})
+            self._pending_flag = "phase_enforce"  # EXT4: tag next tool call
 
     def _check_strategy_refresh(self, msgs: list[dict]):
         if self.turn - self._last_refresh_turn < STRATEGY_REFRESH_INTERVAL:
@@ -410,6 +430,7 @@ class Overseer:
         analysis = self._call_overseer_llm("strategy_refresh")
         if analysis:
             msgs.append({"role": "user", "content": self._wrap_directive(analysis)})
+            self._pending_flag = "strategy_refresh"  # EXT4: tag next tool call
             return
 
         if not self.memory:
@@ -429,6 +450,7 @@ class Overseer:
             f"Findings: {self.vuln_count} vulns, {self.patch_count} patches, {self.verified_count} verified"
         )
         msgs.append({"role": "user", "content": "\n".join(parts)})
+        self._pending_flag = "strategy_refresh"  # EXT4: tag next tool call
 
     def _check_circuit_breaker(self, msgs: list[dict]):
         if self.turn >= MAX_TURNS:

@@ -31,6 +31,10 @@ def generate_iptables_rule(signature: dict) -> str:
         pattern = f["pattern"]
         algo = f.get("algo", "bm")
         return f"{base} -m string --string \"{pattern}\" --algo {algo} -j {action}"
+    elif match_type == "hex_string":
+        hex_pattern = f["hex_pattern"]
+        algo = f.get("algo", "bm")
+        return f"{base} -m string --hex-string \"|{hex_pattern}|\" --algo {algo} -j {action}"
     elif match_type == "u32":
         expr = f["u32_expr"]
         return f"{base} -m u32 --u32 \"{expr}\" -j {action}"
@@ -41,10 +45,19 @@ def generate_iptables_rule(signature: dict) -> str:
 def apply_patch(rule: str, signature: dict, dry_run: bool = False) -> dict:
     """Apply an iptables rule on the Kali host bridge.
 
+    Applies the rule to both the FORWARD chain (for QEMU devices reachable via
+    bridged TAP interfaces) and the INPUT chain (for software simulator IP aliases
+    on br0, which receive host-originating traffic via INPUT not FORWARD).
+
     Returns structured result with timing for TTP measurement.
     """
     start = time.time()
-    cmd = f"sudo {rule}"
+
+    # Build companion INPUT rule alongside the primary FORWARD rule
+    input_rule = rule.replace("-A FORWARD ", "-A INPUT ", 1)
+    rules_to_apply = [rule]
+    if input_rule != rule:
+        rules_to_apply.append(input_rule)
 
     if dry_run:
         elapsed = time.time() - start
@@ -52,11 +65,17 @@ def apply_patch(rule: str, signature: dict, dry_run: bool = False) -> dict:
         _log_remediation(signature, result)
         return result
 
-    proc = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=10)
-    elapsed = time.time() - start
+    errors = []
+    for r in rules_to_apply:
+        proc = subprocess.run(f"sudo {r}", shell=True, capture_output=True,
+                              text=True, timeout=10)
+        if proc.returncode != 0:
+            errors.append(proc.stderr.strip())
 
-    if proc.returncode != 0:
-        result = {"applied": False, "error": proc.stderr.strip(), "rule": rule, "elapsed_s": elapsed}
+    elapsed = time.time() - start
+    if errors:
+        result = {"applied": False, "error": "; ".join(errors), "rule": rule,
+                  "elapsed_s": elapsed}
     else:
         result = {"applied": True, "rule": rule, "elapsed_s": elapsed}
 
