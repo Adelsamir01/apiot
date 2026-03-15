@@ -25,6 +25,16 @@ ENV/
 data/attack_log.json
 data/network_state.json
 data/remediation_log.json
+data/heartbeat.json
 .vscode/
 data/memory.db
 data/logs/
+# Agent-generated dynamic tools (runtime artifacts from create_tool)
+toolkit/coap_*.py
+toolkit/modbus_*.py
+toolkit/custom_*.py
+toolkit/dynamic_*.py
+toolkit/enhanced_*.py
+toolkit/linux_exploits.py
+toolkit/ot_exploit.py
+toolkit/visualize.py
