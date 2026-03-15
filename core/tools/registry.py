@@ -262,6 +262,104 @@ TOOL_SCHEMAS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "mqtt_publish",
+            "description": (
+                "Connect to an MQTT broker (TCP port 1883), publish one message, and disconnect. "
+                "Use to: (1) test broker reachability; (2) discover command-injection "
+                "vulnerabilities — try publishing to 'iot/commands/shutdown' with payload "
+                "'{\"action\":\"shutdown\"}' to test whether sensor devices trust unauthenticated "
+                "MQTT commands; (3) verify blue-team ACL fixes by replaying the attack. "
+                "MQTT uses anonymous access by default (no credentials). "
+                "After publishing a shutdown command, use mqtt_subscribe to verify the "
+                "sensor stopped publishing (device crashed). "
+                "ALWAYS follow with mqtt_subscribe to observe the effect."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "broker_ip": {
+                        "type": "string",
+                        "description": "Broker IP address (e.g. '192.168.100.10').",
+                    },
+                    "port": {
+                        "type": "integer",
+                        "description": "Broker TCP port (default: 1883).",
+                    },
+                    "topic": {
+                        "type": "string",
+                        "description": (
+                            "MQTT topic to publish to. "
+                            "Examples: 'iot/test', 'iot/commands/shutdown', 'iot/commands/reboot'."
+                        ),
+                    },
+                    "payload": {
+                        "type": "string",
+                        "description": (
+                            "Message payload as a string. "
+                            "For crash trigger: '{\"action\":\"shutdown\"}' "
+                            "(sends a shutdown command to any subscribed IoT device)."
+                        ),
+                    },
+                    "timeout": {
+                        "type": "number",
+                        "description": "Connection timeout in seconds (default: 10.0).",
+                    },
+                },
+                "required": ["broker_ip"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "mqtt_subscribe",
+            "description": (
+                "Connect to an MQTT broker, subscribe to a topic, and collect messages "
+                "for a specified duration. "
+                "Use to: (1) discover active topics — use topic='#' to see all traffic; "
+                "(2) intercept sensor telemetry to understand the MQTT topic structure "
+                "before crafting targeted commands; "
+                "(3) verify a device has been taken down — if messages_received==0 on "
+                "'iot/sensors/#' after publishing a crash command, the attack succeeded; "
+                "(4) confirm a blue-team ACL fix blocked unauthorised publishes. "
+                "Always start by subscribing to '#' to map the full topic tree."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "broker_ip": {
+                        "type": "string",
+                        "description": "Broker IP address.",
+                    },
+                    "port": {
+                        "type": "integer",
+                        "description": "Broker TCP port (default: 1883).",
+                    },
+                    "topic": {
+                        "type": "string",
+                        "description": (
+                            "MQTT topic filter to subscribe to. "
+                            "'#' subscribes to ALL topics (wildcard). "
+                            "'iot/sensors/#' subscribes to all sensor topics. "
+                            "'iot/commands/#' subscribes to all command topics."
+                        ),
+                    },
+                    "duration": {
+                        "type": "number",
+                        "description": "How long to listen for messages in seconds (default: 5.0).",
+                    },
+                    "timeout": {
+                        "type": "number",
+                        "description": "Total timeout including connection (default: 15.0).",
+                    },
+                },
+                "required": ["broker_ip"],
+            },
+        },
+    },
     # ── Verification ─────────────────────────────────────────────────
     {
         "type": "function",

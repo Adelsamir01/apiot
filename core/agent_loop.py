@@ -156,6 +156,47 @@ def cmd_udp_send(ip: str, port: int, payload_hex: str,
     return result
 
 
+def cmd_mqtt_publish(broker_ip: str, port: int = 1883,
+                     topic: str = "iot/test", payload: str = "",
+                     timeout: float = 10.0) -> dict:
+    """Publish an MQTT message and log to attack_log."""
+    from apiot.toolkit.protocol_tools import mqtt_publish
+    result = mqtt_publish(broker_ip=broker_ip, port=port, topic=topic,
+                          payload=payload, timeout=timeout)
+
+    logger = AttackLogger()
+    logger.log(
+        target_ip=broker_ip, target_arch="linux-arm",
+        tool_used="mqtt_publish",
+        payload_hex=payload.encode().hex() if payload else "",
+        packets_sent=1,
+        outcome="delivered" if result.get("success") else "failed",
+        details=result,
+    )
+    return result
+
+
+def cmd_mqtt_subscribe(broker_ip: str, port: int = 1883,
+                       topic: str = "#", duration: float = 5.0,
+                       timeout: float = 15.0) -> dict:
+    """Subscribe to MQTT topics and return collected messages."""
+    from apiot.toolkit.protocol_tools import mqtt_subscribe
+    result = mqtt_subscribe(broker_ip=broker_ip, port=port, topic=topic,
+                            duration=duration, timeout=timeout)
+
+    logger = AttackLogger()
+    logger.log(
+        target_ip=broker_ip, target_arch="linux-arm",
+        tool_used="mqtt_subscribe",
+        payload_hex="",
+        packets_sent=1,
+        outcome="delivered" if result.get("success") else "failed",
+        details={"topics_seen": result.get("topics_seen", []),
+                 "messages_received": result.get("messages_received", 0)},
+    )
+    return result
+
+
 # ── Verification ─────────────────────────────────────────────────────────────
 
 def cmd_verify_crash(ip: str):

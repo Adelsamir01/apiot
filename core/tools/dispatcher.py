@@ -17,6 +17,8 @@ from apiot.core.agent_loop import (
     cmd_modbus_request,
     cmd_tcp_send,
     cmd_udp_send,
+    cmd_mqtt_publish,
+    cmd_mqtt_subscribe,
     cmd_verify_crash,
     cmd_verify_shell,
     cmd_remote_exec,
@@ -100,6 +102,24 @@ def _dispatch(name: str, args: dict) -> dict | list:
             port=args["port"],
             payload_hex=args["payload_hex"],
             timeout=args.get("timeout", 5.0),
+        )
+
+    elif name == "mqtt_publish":
+        return cmd_mqtt_publish(
+            broker_ip=args["broker_ip"],
+            port=args.get("port", 1883),
+            topic=args.get("topic", "iot/test"),
+            payload=args.get("payload", ""),
+            timeout=args.get("timeout", 10.0),
+        )
+
+    elif name == "mqtt_subscribe":
+        return cmd_mqtt_subscribe(
+            broker_ip=args["broker_ip"],
+            port=args.get("port", 1883),
+            topic=args.get("topic", "#"),
+            duration=args.get("duration", 5.0),
+            timeout=args.get("timeout", 15.0),
         )
 
     elif name == "verify_crash":

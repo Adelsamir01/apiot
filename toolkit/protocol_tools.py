@@ -20,6 +20,7 @@ so the agent can observe exact bytes and reason about device behaviour.
 
 import socket
 import struct
+import threading
 import time
 
 
@@ -256,3 +257,200 @@ def udp_send(ip: str, port: int, payload_hex: str,
                 }
     except OSError as e:
         return {"success": False, "details": str(e), "sent_hex": payload.hex()}
+
+
+# ── MQTT ──────────────────────────────────────────────────────────────────────
+
+def mqtt_publish(broker_ip: str, port: int = 1883,
+                 topic: str = "iot/test",
+                 payload: str = "",
+                 timeout: float = 10.0) -> dict:
+    """Connect to an MQTT broker, publish one message, and disconnect.
+
+    Use this to:
+    - Test if an MQTT broker is reachable (topic="iot/test", payload="ping")
+    - Discover what happens when commands are published (topic="iot/commands/...")
+    - Trigger crash: publish payload='{"action":"shutdown"}' to iot/commands/shutdown
+      to test whether sensor devices trust unauthenticated MQTT commands.
+
+    MQTT runs over TCP (default port 1883), no credentials required by default
+    (anonymous access). After publishing a shutdown command, use mqtt_subscribe
+    to verify the sensor has stopped publishing (device crashed).
+
+    Returns: {success, broker, topic, payload, published, timing_ms, details}
+    """
+    try:
+        import paho.mqtt.client as mqtt
+    except ImportError:
+        return {"success": False, "details": "paho-mqtt not installed — run: pip install paho-mqtt"}
+
+    result: dict = {"connected": False, "published": False}
+    connect_event = threading.Event()
+    publish_event = threading.Event()
+
+    def on_connect(client, userdata, flags, rc):
+        result["connected"] = (rc == 0)
+        result["connect_rc"] = rc
+        connect_event.set()
+
+    def on_publish(client, userdata, mid):
+        result["published"] = True
+        publish_event.set()
+
+    t0 = time.time()
+    try:
+        client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1,
+                             client_id="apiot-pub", clean_session=True,
+                             protocol=mqtt.MQTTv31)
+        client.on_connect = on_connect
+        client.on_publish = on_publish
+        client.connect(broker_ip, port, keepalive=10)
+        client.loop_start()
+
+        if not connect_event.wait(timeout=min(timeout, 5.0)):
+            client.loop_stop()
+            try:
+                client.disconnect()
+            except Exception:
+                pass
+            return {
+                "success": False,
+                "broker": f"{broker_ip}:{port}",
+                "topic": topic,
+                "details": "Connection timeout",
+                "timing_ms": int((time.time() - t0) * 1000),
+            }
+
+        if not result["connected"]:
+            client.loop_stop()
+            try:
+                client.disconnect()
+            except Exception:
+                pass
+            return {
+                "success": False,
+                "broker": f"{broker_ip}:{port}",
+                "topic": topic,
+                "details": f"Broker refused connection (rc={result.get('connect_rc')})",
+                "timing_ms": int((time.time() - t0) * 1000),
+            }
+
+        client.publish(topic, payload, qos=0)
+        publish_event.wait(timeout=2.0)
+        elapsed = int((time.time() - t0) * 1000)
+        client.loop_stop()
+        try:
+            client.disconnect()
+        except Exception:
+            pass
+
+        return {
+            "success": True,
+            "broker": f"{broker_ip}:{port}",
+            "topic": topic,
+            "payload": payload,
+            "published": result.get("published", True),
+            "timing_ms": elapsed,
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "broker": f"{broker_ip}:{port}",
+            "topic": topic,
+            "details": str(e),
+            "timing_ms": int((time.time() - t0) * 1000),
+        }
+
+
+def mqtt_subscribe(broker_ip: str, port: int = 1883,
+                   topic: str = "#",
+                   duration: float = 5.0,
+                   timeout: float = 15.0) -> dict:
+    """Connect to an MQTT broker, subscribe to a topic, and collect messages.
+
+    Use this to:
+    - Discover active topics on the broker (topic="#" — wildcard for all)
+    - Intercept sensor telemetry to understand the MQTT topic structure
+    - Verify that a device stopped publishing after a crash (messages_received=0)
+    - Check whether a blue-team ACL fix blocked unauthorised publishes
+
+    After publishing a crash command, call this with topic="iot/sensors/#"
+    and duration=10 — if messages_received==0 the sensor has been taken down.
+
+    Returns: {success, broker, subscribed_topic, messages_received,
+              topics_seen, messages (capped at 20), timing_ms}
+    """
+    try:
+        import paho.mqtt.client as mqtt
+    except ImportError:
+        return {"success": False, "details": "paho-mqtt not installed — run: pip install paho-mqtt"}
+
+    messages: list[dict] = []
+    topics_seen: set[str] = set()
+    connect_event = threading.Event()
+
+    def on_connect(client, userdata, flags, rc):
+        if rc == 0:
+            client.subscribe(topic, qos=0)
+        connect_event.set()
+
+    def on_message(client, userdata, msg):
+        try:
+            payload_str = msg.payload.decode("utf-8", errors="replace")
+        except Exception:
+            payload_str = repr(msg.payload)
+        messages.append({"topic": msg.topic, "payload": payload_str})
+        topics_seen.add(msg.topic)
+
+    t0 = time.time()
+    try:
+        client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1,
+                             client_id="apiot-sub", clean_session=True,
+                             protocol=mqtt.MQTTv31)
+        client.on_connect = on_connect
+        client.on_message = on_message
+        client.connect(broker_ip, port, keepalive=10)
+        client.loop_start()
+
+        if not connect_event.wait(timeout=min(timeout, 5.0)):
+            client.loop_stop()
+            try:
+                client.disconnect()
+            except Exception:
+                pass
+            return {
+                "success": False,
+                "broker": f"{broker_ip}:{port}",
+                "topic": topic,
+                "details": "Connection timeout",
+                "timing_ms": int((time.time() - t0) * 1000),
+            }
+
+        # Collect messages for the requested duration
+        remaining = max(0.0, timeout - (time.time() - t0) - 1.0)
+        time.sleep(min(duration, remaining))
+
+        client.loop_stop()
+        try:
+            client.disconnect()
+        except Exception:
+            pass
+
+        elapsed = int((time.time() - t0) * 1000)
+        return {
+            "success": True,
+            "broker": f"{broker_ip}:{port}",
+            "subscribed_topic": topic,
+            "messages_received": len(messages),
+            "topics_seen": sorted(topics_seen),
+            "messages": messages[:20],  # cap to avoid token explosion
+            "timing_ms": elapsed,
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "broker": f"{broker_ip}:{port}",
+            "topic": topic,
+            "details": str(e),
+            "timing_ms": int((time.time() - t0) * 1000),
+        }
