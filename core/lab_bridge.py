@@ -39,6 +39,42 @@ def _is_lab_ready() -> bool:
         return False
 
 
+def _seed_topology_devices(topo: list[dict]) -> None:
+    """Pre-populate network_state.json with devices known from /topology.
+
+    The nmap mapper only sweeps .10-.50 but software simulators live at .100+.
+    This seeds their IPs so the agent finds them via get_actionable_targets even
+    when the mapper subnet sweep misses them.
+    """
+    from apiot.core.state import AgentMemory
+    from apiot.core.mapper import classify
+    import socket
+
+    memory = AgentMemory()
+    for dev in topo:
+        ip = dev.get("ip") or dev.get("address")
+        if not ip:
+            continue
+        ports_list = dev.get("ports", [])
+        ports_dict = {}
+        for p in ports_list:
+            ports_dict[str(p)] = {"state": "open", "service": ""}
+
+        open_ports = set(ports_list)
+        cls = classify(open_ports, mac=None)
+
+        fp = {
+            "ip": ip,
+            "ports": ports_dict,
+            "os_guess": dev.get("arch", "Unknown"),
+            "classification": cls,
+            "source": "lab_topology",
+        }
+        memory.update_host(ip, {"mac": None, "vendor": dev.get("firmware_id", "sim")})
+        memory.update_fingerprint(ip, fp)
+        print(f"[Lab Bridge] Seeded topology device: {ip}  [{cls['category']}]  ports={sorted(open_ports)}")
+
+
 def _run_mapper():
     """Run the APIOT network mapper to populate network_state.json."""
     print("[Lab Bridge] Running network mapper...")
@@ -102,5 +138,8 @@ def ensure_lab_ready():
 
     print(f"[Lab Bridge] Lab has {len(topo)} device(s). All ready.")
 
+    # Run mapper first (it clears memory), then seed topology devices.
+    # Seeding after ensures simulator IPs (.100+) survive the mapper's clear().
     _run_mapper()
+    _seed_topology_devices(topo)
     print("[Lab Bridge] Pre-flight complete. Ready for agent loop.\n")
