@@ -16,6 +16,7 @@ from pathlib import Path
 from openai import OpenAI
 from apiot.core import config
 from apiot.core.state import AgentMemory
+from apiot.core.memory_store import MemoryStore
 from apiot.core.tools.registry import TOOL_SCHEMAS
 from apiot.core.tools.dispatcher import dispatch_tool
 from apiot.core.tui import OperatorConsole
@@ -242,7 +243,7 @@ class APIOTAgent:
                 "X-Title": "APIOT Orchestrator",
             },
         )
-        self.memory = memory or AgentMemory()
+        self.memory = memory or MemoryStore()
         self.session_id: str | None = None
         self.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
         self.context_budget = get_context_budget(self.model)
