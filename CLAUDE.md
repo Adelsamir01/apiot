@@ -27,7 +27,7 @@ sudo python3 -m apiot.core.agent --no-tui # Raw stdout
 ```bash
 sudo python3 -m apiot.core.agent_loop get_state
 sudo python3 -m apiot.core.agent_loop get_targets
-sudo python3 -m apiot.core.agent_loop attack modbus_write_coil 192.168.100.35
+sudo python3 -m apiot.core.agent_loop verify_crash 192.168.100.35
 ```
 
 ### Network mapping
@@ -57,21 +57,27 @@ The `APIOTAgent` class drives the entire system. It:
 6. Coordinates an independent Overseer LLM (`core/oversight.py`) that monitors for stalled/repetitive behavior and injects strategic directives
 
 ### Tool System (`core/tools/`)
-- **`registry.py`**: OpenAI-compatible JSON Schema definitions for all agent-callable tools (`get_network_state`, `get_actionable_targets`, `execute_exploit`, `verify_crash`, `verify_shell`, `analyze_attacks`, `apply_patch`, `verify_patch`, etc.)
+- **`registry.py`**: OpenAI-compatible JSON Schema definitions for all 19 agent-callable tools
 - **`dispatcher.py`**: Routes LLM tool calls (by name + args) to actual Python implementations in `core/agent_loop.py` and the toolkit
 
-### Two-Phase Purple Team Workflow
+### Two-Phase Purple Team Workflow (EXT7: Protocol Primitives)
 **Phase 1 — Red Team:**
 - `get_actionable_targets` → classify by open ports
-- **Bare-Metal OT** (port 502 Modbus): `modbus_write_coil`, `modbus_mbap_overflow`
-- **Bare-Metal OT** (port 5683 CoAP): `coap_option_overflow`
-- **Linux Gateways** (port 23/22/80): `brute_force_telnet`, `brute_force_ssh`, `http_cmd_injection`
-- Always call `verify_crash` or `verify_shell` after each exploit
+- **Bare-Metal OT** (port 502 Modbus): `modbus_request(function_code, data_hex, claimed_length)` — agent reasons about MBAP overflow
+- **Bare-Metal OT** (port 5683 CoAP): `coap_send(options_hex, ...)` — agent reasons about option delta/length encoding
+- **Raw probing**: `tcp_send`, `udp_send` for any other protocol
+- Always call `verify_crash` or `verify_shell` after each probe
 
 **Phase 2 — Blue Team:**
-- `analyze_attacks` extracts iptables-compatible signatures from `data/attack_log.json`
-- `apply_patch` deploys FORWARD rules
-- `verify_patch` replays original attack to confirm the patch holds
+- Agent reasons about what byte pattern makes the exploit unique
+- `iptables_rule(match_type, match_value, protocol, dport)` — agent crafts the filter
+- `modbus_fc_filter(function_code)` — block specific Modbus FC
+- `coap_rate_limit(rate, burst)` — rate-limit CoAP floods
+- `verify_patch(target_ip, protocol, port, payload_hex)` — replay exact bytes, confirm device survives
+
+### New Toolkit Files (EXT7)
+- **`toolkit/protocol_tools.py`**: `coap_send`, `modbus_request`, `tcp_send`, `udp_send`
+- **`toolkit/defense_primitives.py`**: `iptables_rule`, `protocol_block`, `modbus_fc_filter`, `coap_rate_limit`
 
 ### Persistence Layer
 - `data/network_state.json`: Discovered hosts, fingerprints, active vulnerabilities

@@ -364,7 +364,8 @@ class APIOTAgent:
                             console.log_tool_result(result_json)
                         hooks.emit("tool.after_call", {"tool": fn_name, "result": result_json[:500]})
 
-                        if fn_name == "analyze_attacks" and not blocked:
+                        if fn_name in {"iptables_rule", "protocol_block",
+                                       "modbus_fc_filter", "coap_rate_limit"} and not blocked:
                             mission_phase = "blue"
 
                         if has_memory_store and self.session_id and not blocked:
