@@ -373,6 +373,11 @@ TERMINAL_TOKENS = ("TASK_COMPLETE", "TASK_ABORTED")
 _HEARTBEAT_FILE = Path(__file__).resolve().parent.parent / "data" / "heartbeat.json"
 _HEARTBEAT_INTERVAL = 15  # seconds
 
+# Token budget guard: abort if cumulative tokens exceed this limit.
+# Set via APIOT_MAX_TOKENS env var (default 0 = no limit).
+# Prevents a hallucinating model from burning unlimited API credit.
+_KNOWN_TOOL_NAMES: set[str] = set()  # populated lazily from TOOL_SCHEMAS
+
 
 def _heartbeat_writer(stop_event: threading.Event):
     """Background thread: write heartbeat.json every 15 s while the agent is running."""
@@ -440,6 +445,16 @@ class APIOTAgent:
         max_empty = 3
         turn_number = 0
         mission_phase = "red"
+        cumulative_tokens = 0
+        unknown_tool_streak = 0
+        max_unknown_tool_calls = 5  # abort after this many calls to nonexistent tools
+        max_token_budget = int(os.environ.get("APIOT_MAX_TOKENS", "0"))
+        _abort_loop = False  # set to True to break both the inner tool loop and outer while loop
+
+        # Build the set of known tool names for fast lookup
+        global _KNOWN_TOOL_NAMES
+        if not _KNOWN_TOOL_NAMES:
+            _KNOWN_TOOL_NAMES = {s["function"]["name"] for s in TOOL_SCHEMAS if "function" in s}
 
         def _end_session(summary: str, outcome: str):
             if has_memory_store and self.session_id:
@@ -476,6 +491,17 @@ class APIOTAgent:
                 )
                 turn_number += 1
                 turn_token_count = getattr(response.usage, "total_tokens", 0) if response.usage else 0
+                cumulative_tokens += turn_token_count
+
+                # Token budget guard — abort if we've exceeded the configured limit
+                if max_token_budget > 0 and cumulative_tokens > max_token_budget:
+                    console.log_system(
+                        f"[TOKEN BUDGET] Cumulative tokens {cumulative_tokens:,} exceeded "
+                        f"limit {max_token_budget:,}. Aborting to prevent runaway cost."
+                    )
+                    _end_session(f"Token budget exceeded ({cumulative_tokens:,})", "aborted")
+                    _abort_loop = True
+                    break
 
                 msg = response.choices[0].message
                 self.messages.append(msg)
@@ -505,6 +531,32 @@ class APIOTAgent:
                             continue
 
                         hooks.emit("tool.before_call", {"tool": fn_name, "args": fn_args})
+
+                        # Unknown tool guard — catch hallucinated tool names before dispatch
+                        if _KNOWN_TOOL_NAMES and fn_name not in _KNOWN_TOOL_NAMES:
+                            unknown_tool_streak += 1
+                            known_list = ", ".join(sorted(_KNOWN_TOOL_NAMES)[:15]) + " ..."
+                            err_msg = (
+                                f"Tool '{fn_name}' does not exist. "
+                                f"You MUST only call tools from this list: {known_list}. "
+                                f"Do NOT invent tool names. Use get_network_state or get_actionable_targets to start."
+                            )
+                            console.log_error(f"Unknown tool '{fn_name}' called (streak {unknown_tool_streak})")
+                            self.messages.append({
+                                "role": "tool",
+                                "tool_call_id": call.id,
+                                "content": json.dumps({"error": err_msg}),
+                            })
+                            if unknown_tool_streak >= max_unknown_tool_calls:
+                                console.log_system(
+                                    f"[ABORT] {unknown_tool_streak} calls to nonexistent tools. "
+                                    "Model appears to be hallucinating tool names. Aborting."
+                                )
+                                _end_session("Repeated unknown tool calls — model hallucination", "aborted")
+                                _abort_loop = True
+                                break
+                            continue
+                        unknown_tool_streak = 0  # reset on any valid tool name
 
                         if self.overseer_enabled:
                             blocked, reason, overseer_flag = overseer.check_tool_call(fn_name, fn_args)
@@ -559,11 +611,17 @@ class APIOTAgent:
                             "content": truncate_result_for_history(enriched),
                         })
 
+                    if _abort_loop:
+                        break  # propagate abort out of the while True loop
+
                     if self.overseer_enabled:
                         steering = overseer.get_steering_messages()
                         for steer_msg in steering:
                             self.messages.append(steer_msg)
                             console.log_overseer(steer_msg['content'])
+
+                if _abort_loop:
+                    break
 
                 if msg.content or msg.tool_calls:
                     empty_streak = 0
