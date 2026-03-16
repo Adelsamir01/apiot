@@ -30,9 +30,11 @@ STALL_THRESHOLD = 8
 STALL_HARD_LIMIT = 15
 STRATEGY_REFRESH_INTERVAL = 5
 MAX_TURNS = 120
-BLUE_TOOLS = {"analyze_attacks", "apply_patch", "verify_patch", "list_patches"}
-RED_EXPLOITS = {"execute_exploit", "verify_crash", "verify_shell", "brute_force_ssh",
-                "brute_force_telnet", "remote_exec", "create_tool"}
+BLUE_TOOLS = {"iptables_rule", "protocol_block", "modbus_fc_filter", "coap_rate_limit",
+              "verify_patch", "list_patches"}
+RED_EXPLOITS = {"coap_send", "modbus_request", "tcp_send", "udp_send",
+                "mqtt_publish", "mqtt_subscribe", "verify_crash", "verify_shell",
+                "remote_exec", "create_tool"}
 
 _OVERSEER_SYSTEM = """\
 You are the strategic brain overseeing an autonomous IoT penetration testing \
@@ -47,11 +49,15 @@ Rules:
 - Reference the failure history — do NOT suggest things that already failed \
   unless you have a concrete variation (different port, different creds, \
   different payload).
-- PRIORITIZE DIVERSITY: if the agent has only used brute_force_ssh, direct \
-  it to different attack classes (OT exploits, CoAP, Modbus, HTTP injection, \
-  create_tool for custom exploits, run_command for protocol-specific probing).
+- PRIORITIZE DIVERSITY: if the agent is over-using one primitive, direct it \
+  to different attack classes. Available red tools: coap_send (option overflow \
+  via options_hex), modbus_request (MBAP overflow via claimed_length), tcp_send \
+  (raw TCP payload), udp_send (raw UDP), mqtt_publish/mqtt_subscribe (MQTT attack \
+  chain), remote_exec (SSH shell), create_tool (custom exploit), run_command \
+  (manual probing). Blue tools: iptables_rule, protocol_block, modbus_fc_filter, \
+  coap_rate_limit, verify_patch.
 - If the agent is repeating the same approach, EXPLICITLY tell it to stop \
-  and name the specific alternative tool+target+port.
+  and name the specific alternative tool+target+port from the list above.
 - If phase transition is appropriate, say so explicitly.
 - Keep your response under 150 words. No preamble, no markdown headers, \
   just numbered directives starting with 1."""
@@ -254,15 +260,16 @@ class Overseer:
                 self._pending_flag = None
                 return True, reason, "blocked_crashed"
 
-            if tool == "execute_exploit":
-                attack = args.get("tool_name", "")
-                if attack and self.memory.is_already_patched(ip, attack):
-                    reason = (
-                        f"BLOCKED: Attack '{attack}' on {ip} already has a verified patch. "
-                        f"Try a different attack vector."
-                    )
-                    self._pending_flag = None
-                    return True, reason, "blocked_patched"
+            # Guard against replaying an already-patched attack vector.
+            # Works for any red tool that carries an explicit attack_name param.
+            attack = args.get("attack_name", args.get("tool_name", ""))
+            if attack and self.memory.is_already_patched(ip, attack):
+                reason = (
+                    f"BLOCKED: Attack '{attack}' on {ip} already has a verified patch. "
+                    f"Try a different attack vector."
+                )
+                self._pending_flag = None
+                return True, reason, "blocked_patched"
 
         # Call allowed — attach any pending steering flag
         flag = self._pending_flag or "none"
@@ -303,7 +310,7 @@ class Overseer:
             elif tool == "verify_patch":
                 self.patch_count += 1
                 self.verified_count += 1
-            elif tool == "apply_patch":
+            elif tool in BLUE_TOOLS:
                 self.patch_count += 1
         else:
             if tool in RED_EXPLOITS:
@@ -364,7 +371,7 @@ class Overseer:
             f"The agent has used '{dominant_tool}' for {dominant_count}/{len(recent_exploits)} "
             f"of its recent exploit calls across {len(unique_ips)} different targets. "
             f"This is monotonic behavior. Direct it to use fundamentally different tools "
-            f"(OT exploits, CoAP, Modbus, HTTP injection, create_tool, run_command).",
+            f"(coap_send, modbus_request, tcp_send, udp_send, create_tool, run_command).",
         )
         if analysis:
             msgs.append({"role": "user", "content": self._wrap_directive(analysis)})
@@ -372,8 +379,9 @@ class Overseer:
             msgs.append({"role": "user", "content": self._wrap_directive(
                 f"STOP using {dominant_tool} repeatedly. You have used it {dominant_count} times "
                 f"in your last {len(recent_exploits)} exploit calls. Use DIFFERENT attack tools: "
-                f"try execute_exploit with coap_option_overflow, modbus_write_coil, "
-                f"http_cmd_injection, or use create_tool to build a custom exploit."
+                f"try coap_send (options_hex='DD FF FF' for option overflow), "
+                f"modbus_request (malformed MBAP via claimed_length), "
+                f"tcp_send (raw payload probe), or create_tool to build a custom exploit."
             )})
 
     def _check_stall(self, msgs: list[dict]):
@@ -417,7 +425,8 @@ class Overseer:
             directive = analysis or (
                 f"All {self.targets_total} targets attempted. "
                 f"{self.vuln_count} vulnerabilities found. "
-                f"Begin BLUE TEAM phase: call analyze_attacks, then apply_patch and verify_patch for each."
+                f"Begin BLUE TEAM phase: use iptables_rule or protocol_block to filter the "
+                f"attack payload, then verify_patch to confirm the device survives replay."
             )
             msgs.append({"role": "user", "content": self._wrap_directive(directive)})
             self._pending_flag = "phase_enforce"  # EXT4: tag next tool call
