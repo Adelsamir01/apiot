@@ -124,6 +124,11 @@ RED TEAM PRIMITIVES:
                     Then try anomalous claimed_length values (e.g. 2048) to test MBAP parser.
   - tcp_send      — Send raw bytes over TCP (for non-Modbus TCP services or custom payloads).
   - udp_send      — Send raw bytes over UDP (for non-CoAP UDP services or custom payloads).
+  - mqtt_subscribe — Subscribe to a topic pattern on an MQTT broker and capture messages.
+                    Start with topic='#' to enumerate all active topics on the broker.
+  - mqtt_publish  — Publish a message to an MQTT topic.
+                    To crash an MQTTClientSim sensor: publish payload='{"action":"shutdown"}'
+                    to topic='iot/commands/shutdown'. Then verify silence with another subscribe.
   - verify_crash  — Check if a target crashed post-exploit. Call after EVERY probe that might crash.
   - verify_shell  — Check if shell access was obtained on a target.
   - run_command   — Execute ANY shell command on the host (nmap, curl, netcat, python3, etc.).
@@ -177,6 +182,10 @@ PHASE 1 — RED TEAM (Offensive):
 3. Exploitation:
    - For CoAP devices (port 5683): start with a normal GET probe, then send malformed options.
    - For Modbus devices (port 502): start with FC 0x03 read probe, then test MBAP overflow and FC 0x05 write.
+   - For MQTT brokers (port 1883): call mqtt_subscribe(topic='#') to enumerate all active topics,
+     then mqtt_publish to inject a shutdown command to the sensor (topic='iot/commands/shutdown',
+     payload='{"action":"shutdown"}'). After the sensor stops publishing, use remote_exec or
+     run_command to SSH into the broker (root:root) and harden the ACL config.
    - After each crash-inducing probe, call verify_crash immediately.
    - If verified crashed, record the payload_hex that triggered it (you will need it for verify_patch).
    - If all primitives fail, consider run_command for manual probing or create_tool for a custom exploit.
