@@ -1,0 +1,23 @@
+{
+  "rq": "RQ3",
+  "protocol": "coap",
+  "topology": "T1",
+  "run_id": 2,
+  "overseer": false,
+  "impairment": "none",
+  "impairment_loss_pct": 0,
+  "impairment_latency_ms": 0,
+  "impairment_jitter_ms": 0,
+  "session": 1,
+  "outcome": "COMPLETE",
+  "mission_success": true,
+  "duration_seconds": 180.5,
+  "git_hash_apiot": "a6f5b97",
+  "git_hash_iot_vlab": "88c2731",
+  "model": "minimax/minimax-m2.5",
+  "timestamp_start": "2026-03-15T19:04:19.235891+00:00",
+  "timestamp_end": "2026-03-15T19:07:19.704841+00:00",
+  "simulator_ips": [
+    "192.168.100.100"
+  ]
+}

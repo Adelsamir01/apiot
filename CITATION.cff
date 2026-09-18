@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+title: "APIOT: Autonomous Purple-teaming for Industrial OT"
+message: "If you use this artifact, please cite the accompanying Computers & Security paper."
+type: software
+authors:
+  - family-names: ElZemity
+    given-names: Adel Samir
+repository-code: "https://github.com/Adelsamir01/apiot"
+license: MIT

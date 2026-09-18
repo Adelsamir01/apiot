@@ -1,0 +1,31 @@
+{
+  "scenarios": [
+    {
+      "id": "industrial_core",
+      "name": "Industrial Core",
+      "description": "Cortex-M3 PLC using Modbus/TCP",
+      "firmware_ids": ["arm_modbus_sim"],
+      "attack_tools": ["modbus_write_coil", "modbus_mbap_overflow"],
+      "verify_type": "crash",
+      "boot_wait_sec": 10
+    },
+    {
+      "id": "smart_infrastructure",
+      "name": "Smart Infrastructure",
+      "description": "Cortex-M3 CoAP sensor (zephyr_coap)",
+      "firmware_ids": ["zephyr_coap"],
+      "attack_tools": ["coap_option_overflow"],
+      "verify_type": "crash",
+      "boot_wait_sec": 10
+    },
+    {
+      "id": "edge_gateway",
+      "name": "Edge Gateway",
+      "description": "MIPS Linux router (dvrf_v03) using HTTP/Telnet",
+      "firmware_ids": ["dvrf_v03"],
+      "attack_tools": ["http_cmd_injection", "brute_force_telnet"],
+      "verify_type": "shell",
+      "boot_wait_sec": 25
+    }
+  ]
+}

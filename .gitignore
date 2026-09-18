@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtualenvs / secrets
+env/
+.venv/
+venv/
+ENV/
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Local raw experiment outputs (sanitized copies live under artifact/sanitized-runs/)
+/data/
+/results/
+*.db
+hydra.restore
+
+# Runtime-generated toolkit modules
+toolkit/ssh_*.py
+toolkit/mqtt_*.py
+toolkit/credential_*.py
+toolkit/busybox_*.py
+toolkit/combined_*.py
+toolkit/dummy_*.py
+toolkit/exim4_*.py
+toolkit/iot_*.py
+toolkit/mosquitto_*.py
+toolkit/phase_*.py
+toolkit/rpcbind_*.py
+toolkit/telnet_*.py
+toolkit/test_crash_*.py
+toolkit/verify_mqtt_*.py
+toolkit/advanced_*.py
+toolkit/aggressive_*.py
+toolkit/extended_*.py
+toolkit/final_*.py
+toolkit/mbap_*.py
+toolkit/priv_*.py

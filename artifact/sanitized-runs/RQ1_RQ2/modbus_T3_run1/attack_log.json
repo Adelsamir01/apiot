@@ -1,0 +1,331 @@
+[
+  {
+    "timestamp": 1773599823.6229897,
+    "target_ip": "192.168.100.100",
+    "target_arch": "Unknown MCU",
+    "tool_used": "modbus_request",
+    "payload_hex": "000100000006010300000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "000100000006010300000001",
+      "response_hex": "0001000000050103020000",
+      "response_len": 11,
+      "timing_ms": 1,
+      "claimed_length": 6,
+      "actual_pdu_length": 5
+    }
+  },
+  {
+    "timestamp": 1773599823.6246874,
+    "target_ip": "192.168.100.101",
+    "target_arch": "Unknown MCU",
+    "tool_used": "modbus_request",
+    "payload_hex": "000100000006010300000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "000100000006010300000001",
+      "response_hex": "0001000000050103020000",
+      "response_len": 11,
+      "timing_ms": 0,
+      "claimed_length": 6,
+      "actual_pdu_length": 5
+    }
+  },
+  {
+    "timestamp": 1773599823.626236,
+    "target_ip": "192.168.100.102",
+    "target_arch": "Unknown MCU",
+    "tool_used": "modbus_request",
+    "payload_hex": "000100000006010300000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "000100000006010300000001",
+      "response_hex": "0001000000050103020000",
+      "response_len": 11,
+      "timing_ms": 0,
+      "claimed_length": 6,
+      "actual_pdu_length": 5
+    }
+  },
+  {
+    "timestamp": 1773599926.7664099,
+    "target_ip": "192.168.100.100",
+    "target_arch": "Unknown MCU",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "alive",
+    "details": {
+      "status": "alive",
+      "verified": false,
+      "ip": "192.168.100.100",
+      "details": "TCP handshake succeeded on port 502"
+    }
+  },
+  {
+    "timestamp": 1773599998.7887502,
+    "target_ip": "192.168.100.100",
+    "target_arch": "Unknown MCU",
+    "tool_used": "modbus_request",
+    "payload_hex": "000100000800010300000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 104] Connection reset by peer",
+      "sent_hex": "000100000800010300000001"
+    }
+  },
+  {
+    "timestamp": 1773600013.3225994,
+    "target_ip": "192.168.100.100",
+    "target_arch": "Unknown MCU",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "alive",
+    "details": {
+      "status": "alive",
+      "verified": false,
+      "ip": "192.168.100.100",
+      "details": "TCP handshake succeeded on port 502"
+    }
+  },
+  {
+    "timestamp": 1773600055.2072942,
+    "target_ip": "192.168.100.100",
+    "target_arch": "Unknown MCU",
+    "tool_used": "coap_send",
+    "payload_hex": "40011234",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "40011234",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5033,
+      "details": "No CoAP response within timeout \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1773600065.1488285,
+    "target_ip": "192.168.100.101",
+    "target_arch": "Unknown MCU",
+    "tool_used": "modbus_request",
+    "payload_hex": "00010000000601050000ff00",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "00010000000601050000ff00",
+      "response_hex": "00010000000601050000ff00",
+      "response_len": 12,
+      "timing_ms": 1,
+      "claimed_length": 6,
+      "actual_pdu_length": 5
+    }
+  },
+  {
+    "timestamp": 1773600069.3088644,
+    "target_ip": "192.168.100.101",
+    "target_arch": "Unknown MCU",
+    "tool_used": "modbus_request",
+    "payload_hex": "000100000800010300000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 104] Connection reset by peer",
+      "sent_hex": "000100000800010300000001"
+    }
+  },
+  {
+    "timestamp": 1773600073.9254377,
+    "target_ip": "192.168.100.101",
+    "target_arch": "Unknown MCU",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "alive",
+    "details": {
+      "status": "alive",
+      "verified": false,
+      "ip": "192.168.100.101",
+      "details": "TCP handshake succeeded on port 502"
+    }
+  },
+  {
+    "timestamp": 1773600153.1333132,
+    "target_ip": "192.168.100.101",
+    "target_arch": "Unknown MCU",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "alive",
+    "details": {
+      "status": "alive",
+      "verified": false,
+      "ip": "192.168.100.101",
+      "details": "TCP handshake succeeded on port 502"
+    }
+  },
+  {
+    "timestamp": 1773600230.523121,
+    "target_ip": "192.168.100.102",
+    "target_arch": "Unknown MCU",
+    "tool_used": "modbus_request",
+    "payload_hex": "000100000800010300000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 104] Connection reset by peer",
+      "sent_hex": "000100000800010300000001"
+    }
+  },
+  {
+    "timestamp": 1773600248.7428641,
+    "target_ip": "192.168.100.101",
+    "target_arch": "Unknown MCU",
+    "tool_used": "modbus_request",
+    "payload_hex": "000100000006010300000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "000100000006010300000001",
+      "response_hex": "0001000000050103020000",
+      "response_len": 11,
+      "timing_ms": 0,
+      "claimed_length": 6,
+      "actual_pdu_length": 5
+    }
+  },
+  {
+    "timestamp": 1773600286.6239827,
+    "target_ip": "192.168.100.100",
+    "target_arch": "Unknown MCU",
+    "tool_used": "modbus_request",
+    "payload_hex": "00010000000601050000ff00",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "00010000000601050000ff00",
+      "response_hex": "00010000000601050000ff00",
+      "response_len": 12,
+      "timing_ms": 0,
+      "claimed_length": 6,
+      "actual_pdu_length": 5
+    }
+  },
+  {
+    "timestamp": 1773600307.589936,
+    "target_ip": "192.168.100.101",
+    "target_arch": "Unknown MCU",
+    "tool_used": "coap_send",
+    "payload_hex": "40011234",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "40011234",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5020,
+      "details": "No CoAP response within timeout \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1773600318.6369283,
+    "target_ip": "192.168.100.100",
+    "target_arch": "Unknown MCU",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "alive",
+    "details": {
+      "status": "alive",
+      "verified": false,
+      "ip": "192.168.100.100",
+      "details": "TCP handshake succeeded on port 502"
+    }
+  },
+  {
+    "timestamp": 1773600368.0722084,
+    "target_ip": "192.168.100.101",
+    "target_arch": "Unknown MCU",
+    "tool_used": "modbus_request",
+    "payload_hex": "000100000006010300000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "000100000006010300000001",
+      "response_hex": "0001000000050103020000",
+      "response_len": 11,
+      "timing_ms": 0,
+      "claimed_length": 6,
+      "actual_pdu_length": 5
+    }
+  },
+  {
+    "timestamp": 1773600404.1804347,
+    "target_ip": "192.168.100.102",
+    "target_arch": "unknown",
+    "tool_used": "replay_probe",
+    "payload_hex": "000100000800010300000001",
+    "packets_sent": 1,
+    "outcome": "replay_delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "000100000800010300000001",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5022,
+      "details": "No response within timeout"
+    }
+  },
+  {
+    "timestamp": 1773600445.325025,
+    "target_ip": "192.168.100.101",
+    "target_arch": "Unknown MCU",
+    "tool_used": "coap_send",
+    "payload_hex": "40011234",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "40011234",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5000,
+      "details": "No CoAP response within timeout \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1773600448.630399,
+    "target_ip": "192.168.100.102",
+    "target_arch": "Unknown MCU",
+    "tool_used": "modbus_request",
+    "payload_hex": "00010000000601030000000a",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "00010000000601030000000a",
+      "response_hex": "0001000000170103140000000000000000000000000000000000000000",
+      "response_len": 29,
+      "timing_ms": 1,
+      "claimed_length": 6,
+      "actual_pdu_length": 5
+    }
+  }
+]

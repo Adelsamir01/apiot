@@ -1,0 +1,32 @@
+{
+  "rq": "RQ6",
+  "protocol": "modbus",
+  "topology": "T1",
+  "run_id": 2,
+  "overseer": true,
+  "impairment": "heavy",
+  "impairment_loss_pct": 20,
+  "impairment_latency_ms": 200,
+  "impairment_jitter_ms": 40,
+  "session": 1,
+  "outcome": "COMPLETE",
+  "mission_success": true,
+  "duration_seconds": 841.1,
+  "git_hash_apiot": "8c3ce79",
+  "git_hash_iot_vlab": "0f88fc4",
+  "model": "minimax/minimax-m2.5",
+  "timestamp_start": "2026-03-15T21:10:37.575987+00:00",
+  "timestamp_end": "2026-03-15T21:24:38.692457+00:00",
+  "simulator_ips": [
+    "192.168.100.100"
+  ],
+  "total_turns": 41,
+  "total_tool_calls": 42,
+  "blue_tool_calls": 15,
+  "first_exploit_turn": null,
+  "phase_transition_turn": 27,
+  "mission_complete_turn": 41,
+  "vulns_found": 0,
+  "patches_applied": 0,
+  "devices_tested": 1
+}

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "apiot"
+version = "2.1.0"
+description = "Research artifact: APIOT (Autonomous Purple-teaming for Industrial OT)"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Adel Samir ElZemity", email = "adelelzemity@gmail.com"},
+]
+dependencies = [
+    "openai>=1.0",
+    "python-dotenv>=1.0",
+    "requests>=2.28",
+    "rich>=13.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Adelsamir01/apiot"
+Repository = "https://github.com/Adelsamir01/apiot"
+Companion = "https://github.com/Adelsamir01/iot_vlab"
+
+[project.scripts]
+apiot = "apiot.core.cli:main"
+
+[tool.setuptools.package-dir]
+apiot = "."
+
+[tool.setuptools.packages.find]
+where = [".."]
+include = ["apiot", "apiot.*"]

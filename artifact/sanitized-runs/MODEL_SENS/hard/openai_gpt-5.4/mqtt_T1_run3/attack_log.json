@@ -1,0 +1,47 @@
+[
+  {
+    "timestamp": 1773694552.8689237,
+    "target_ip": "192.168.100.20",
+    "target_arch": "Unknown",
+    "tool_used": "tcp_send",
+    "payload_hex": "474554202f20485454502f312e310d0a486f73743a207461726765740d0a0d0a",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 111] Connection refused",
+      "sent_hex": "474554202f20485454502f312e310d0a486f73743a207461726765740d0a0d0a"
+    }
+  },
+  {
+    "timestamp": 1773694553.9482708,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "6d616c6963696f75735f7061796c6f6164",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.20:1883",
+      "topic": "test/topic",
+      "payload": "malicious_payload",
+      "published": true,
+      "timing_ms": 2
+    }
+  },
+  {
+    "timestamp": 1773694553.955686,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "modbus_request",
+    "payload_hex": "0001000003e8011000000001020001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 111] Connection refused",
+      "sent_hex": "0001000003e8011000000001020001"
+    }
+  }
+]

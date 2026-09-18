@@ -1,0 +1,46 @@
+[
+  {
+    "timestamp": 1773690766.6101353,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "modbus_request",
+    "payload_hex": "000100000800010300000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 111] Connection refused",
+      "sent_hex": "000100000800010300000001"
+    }
+  },
+  {
+    "timestamp": 1773690767.6797738,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22616374696f6e223a2273687574646f776e227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.20:1883",
+      "topic": "iot/commands/shutdown",
+      "payload": "{\"action\":\"shutdown\"}",
+      "published": true,
+      "timing_ms": 2
+    }
+  },
+  {
+    "timestamp": 1773690787.3706656,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [],
+      "messages_received": 0
+    }
+  }
+]

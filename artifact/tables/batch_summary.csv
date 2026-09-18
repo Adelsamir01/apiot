@@ -1,0 +1,6 @@
+batch,n_runs,n_success,success_rate
+MODEL_SENS,42,36,0.857
+RQ1_RQ2,22,19,0.864
+RQ3,9,8,0.889
+RQ4,6,5,0.833
+RQ6,12,12,1.000

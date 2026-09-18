@@ -1,0 +1,28 @@
+# JSON tool schemas
+
+`tools.json` is the exact OpenAI-compatible tool list passed to the model (`TOOL_SCHEMAS` in `core/tools/registry.py`).
+
+**Tool count:** 21
+
+Roster:
+- `get_network_state`
+- `get_actionable_targets`
+- `stealth_check`
+- `coap_send`
+- `modbus_request`
+- `tcp_send`
+- `udp_send`
+- `mqtt_publish`
+- `mqtt_subscribe`
+- `verify_crash`
+- `verify_shell`
+- `inspect_lab`
+- `run_command`
+- `create_tool`
+- `remote_exec`
+- `iptables_rule`
+- `protocol_block`
+- `modbus_fc_filter`
+- `coap_rate_limit`
+- `verify_patch`
+- `list_patches`

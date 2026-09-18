@@ -1,0 +1,68 @@
+[
+  {
+    "timestamp": 1773688810.8021035,
+    "target_ip": "192.168.100.100",
+    "target_arch": "Unknown MCU",
+    "tool_used": "coap_send",
+    "payload_hex": "4201abcda1b2",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "4201abcda1b2",
+      "response_hex": "6245abcda1b2ff7b2274656d70223a32322c2268756d6964697479223a35352c22737461747573223a226f6b227d",
+      "response_len": 46,
+      "timing_ms": 0
+    }
+  },
+  {
+    "timestamp": 1773688845.8422768,
+    "target_ip": "192.168.100.100",
+    "target_arch": "Unknown MCU",
+    "tool_used": "coap_send",
+    "payload_hex": "4201abcea1b2ddffff",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "4201abcea1b2ddffff",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5026,
+      "details": "No CoAP response within timeout \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1773688862.1867037,
+    "target_ip": "192.168.100.100",
+    "target_arch": "Unknown MCU",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "crash_verified",
+    "details": {
+      "status": "crashed",
+      "verified": true,
+      "ip": "192.168.100.100",
+      "details": "Ping OK but all probed ports [5683] unresponsive",
+      "vulnerability_id": "2cbaf500a12a"
+    }
+  },
+  {
+    "timestamp": 1773689008.6238441,
+    "target_ip": "192.168.100.100",
+    "target_arch": "unknown",
+    "tool_used": "replay_probe",
+    "payload_hex": "DD FF FF",
+    "packets_sent": 1,
+    "outcome": "replay_delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "ddffff",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5001,
+      "details": "No UDP response \u2014 device may have dropped or crashed"
+    }
+  }
+]

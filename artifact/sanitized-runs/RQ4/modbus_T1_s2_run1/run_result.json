@@ -1,0 +1,23 @@
+{
+  "rq": "RQ4",
+  "protocol": "modbus",
+  "topology": "T1",
+  "run_id": 1,
+  "overseer": true,
+  "impairment": "none",
+  "impairment_loss_pct": 0,
+  "impairment_latency_ms": 0,
+  "impairment_jitter_ms": 0,
+  "session": 2,
+  "outcome": "ABORTED",
+  "mission_success": false,
+  "duration_seconds": 450.7,
+  "git_hash_apiot": "a6f5b97",
+  "git_hash_iot_vlab": "88c2731",
+  "model": "minimax/minimax-m2.5",
+  "timestamp_start": "2026-03-15T19:43:56.582117+00:00",
+  "timestamp_end": "2026-03-15T19:51:27.280740+00:00",
+  "simulator_ips": [
+    "192.168.100.100"
+  ]
+}

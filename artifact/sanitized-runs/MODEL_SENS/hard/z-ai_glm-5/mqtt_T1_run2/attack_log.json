@@ -1,0 +1,380 @@
+[
+  {
+    "timestamp": 1773685204.4611614,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [],
+      "messages_received": 0
+    }
+  },
+  {
+    "timestamp": 1773685209.873683,
+    "target_ip": "192.168.100.32",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [
+        "iot/sensors/humidity",
+        "iot/sensors/pressure",
+        "iot/sensors/temperature"
+      ],
+      "messages_received": 3
+    }
+  },
+  {
+    "timestamp": 1773685236.1950724,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "coap_send",
+    "payload_hex": "40011234ffffffff",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "40011234ffffffff",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5005,
+      "details": "No CoAP response within timeout \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1773685236.2084327,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "modbus_request",
+    "payload_hex": "0001000003e8010300000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 111] Connection refused",
+      "sent_hex": "0001000003e8010300000001"
+    }
+  },
+  {
+    "timestamp": 1773685250.3121939,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "alive",
+    "details": {
+      "status": "alive",
+      "verified": false,
+      "ip": "192.168.100.20",
+      "details": "TCP handshake succeeded on port 22"
+    }
+  },
+  {
+    "timestamp": 1773685282.663111,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [],
+      "messages_received": 0
+    }
+  },
+  {
+    "timestamp": 1773685282.9571888,
+    "target_ip": "192.168.100.20",
+    "target_arch": "Unknown",
+    "tool_used": "tcp_send",
+    "payload_hex": "474554202f20485454502f312e310d0a486f73743a203139322e3136382e3130302e32300d0a0d0a",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 111] Connection refused",
+      "sent_hex": "474554202f20485454502f312e310d0a486f73743a203139322e3136382e3130302e32300d0a0d0a"
+    }
+  },
+  {
+    "timestamp": 1773685301.601163,
+    "target_ip": "192.168.100.32",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22616374696f6e223a2273687574646f776e227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.32:1883",
+      "topic": "iot/commands/shutdown",
+      "payload": "{\"action\":\"shutdown\"}",
+      "published": true,
+      "timing_ms": 10
+    }
+  },
+  {
+    "timestamp": 1773685317.6808999,
+    "target_ip": "192.168.100.32",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [],
+      "messages_received": 0
+    }
+  },
+  {
+    "timestamp": 1773685344.5713375,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "coap_send",
+    "payload_hex": "40011234010203",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "40011234010203",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5011,
+      "details": "No CoAP response within timeout \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1773685344.5874832,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "modbus_request",
+    "payload_hex": "000100000100010300000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 111] Connection refused",
+      "sent_hex": "000100000100010300000001"
+    }
+  },
+  {
+    "timestamp": 1773685366.992831,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "alive",
+    "details": {
+      "status": "alive",
+      "verified": false,
+      "ip": "192.168.100.20",
+      "details": "TCP handshake succeeded on port 22"
+    }
+  },
+  {
+    "timestamp": 1773685386.306027,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [],
+      "messages_received": 0
+    }
+  },
+  {
+    "timestamp": 1773685419.1006744,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "6d616c6963696f75735f7061796c6f6164",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.20:1883",
+      "topic": "test/topic",
+      "payload": "malicious_payload",
+      "published": true,
+      "timing_ms": 8
+    }
+  },
+  {
+    "timestamp": 1773685424.1257963,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "coap_send",
+    "payload_hex": "40011234ffffffff",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "40011234ffffffff",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5003,
+      "details": "No CoAP response within timeout \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1773685437.2874074,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "alive",
+    "details": {
+      "status": "alive",
+      "verified": false,
+      "ip": "192.168.100.20",
+      "details": "TCP handshake succeeded on port 22"
+    }
+  },
+  {
+    "timestamp": 1773685458.267182,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [],
+      "messages_received": 0
+    }
+  },
+  {
+    "timestamp": 1773685458.5658724,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "modbus_request",
+    "payload_hex": "0001000001f401100000000204ffffffff",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 111] Connection refused",
+      "sent_hex": "0001000001f401100000000204ffffffff"
+    }
+  },
+  {
+    "timestamp": 1773685503.7740948,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7061796c6f61645f64617461",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.20:1883",
+      "topic": "test/topic",
+      "payload": "payload_data",
+      "published": true,
+      "timing_ms": 7
+    }
+  },
+  {
+    "timestamp": 1773685508.8131418,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "coap_send",
+    "payload_hex": "40011234ffffffffffffffff",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "40011234ffffffffffffffff",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5025,
+      "details": "No CoAP response within timeout \u2014 device may have dropped or crashed"
+    }
+  },
+  {
+    "timestamp": 1773685532.508411,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "verify_crash",
+    "payload_hex": "",
+    "packets_sent": 2,
+    "outcome": "alive",
+    "details": {
+      "status": "alive",
+      "verified": false,
+      "ip": "192.168.100.20",
+      "details": "TCP handshake succeeded on port 22"
+    }
+  },
+  {
+    "timestamp": 1773685550.631637,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_subscribe",
+    "payload_hex": "",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "topics_seen": [],
+      "messages_received": 0
+    }
+  },
+  {
+    "timestamp": 1773685550.9574447,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "modbus_request",
+    "payload_hex": "00010000ffff010300000001",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": false,
+      "details": "Connection failed: [Errno 111] Connection refused",
+      "sent_hex": "00010000ffff010300000001"
+    }
+  },
+  {
+    "timestamp": 1773685569.2978177,
+    "target_ip": "192.168.100.20",
+    "target_arch": "linux-arm",
+    "tool_used": "mqtt_publish",
+    "payload_hex": "7b22616374696f6e223a2274657374222c2264617461223a226578706c6f6974227d",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "broker": "192.168.100.20:1883",
+      "topic": "iot/commands/test",
+      "payload": "{\"action\":\"test\",\"data\":\"exploit\"}",
+      "published": true,
+      "timing_ms": 7
+    }
+  },
+  {
+    "timestamp": 1773685574.339181,
+    "target_ip": "192.168.100.20",
+    "target_arch": "MIPS or ARM",
+    "tool_used": "coap_send",
+    "payload_hex": "40011234010203",
+    "packets_sent": 1,
+    "outcome": "delivered",
+    "details": {
+      "success": true,
+      "sent_hex": "40011234010203",
+      "response_hex": "",
+      "response_len": 0,
+      "timing_ms": 5025,
+      "details": "No CoAP response within timeout \u2014 device may have dropped or crashed"
+    }
+  }
+]
