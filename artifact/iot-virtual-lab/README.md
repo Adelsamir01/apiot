@@ -7,3 +7,8 @@ Full firmware images and the complete lab repository remain at:
 https://github.com/Adelsamir01/iot_vlab
 
 Large binary images (initrd, firmware blobs) are intentionally not duplicated here.
+
+## Companion repository pin
+
+Full IoT Virtual Lab repository: https://github.com/Adelsamir01/iot_vlab  
+Matched revision at packaging time:  ().

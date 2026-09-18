@@ -29,6 +29,6 @@ Plain-text / JSON copies for inspection also live under `artifact/`.
 | Experiment runner | `scripts/run_experiment.py` |
 | Analysis scripts | `scripts/analysis/` |
 | Sanitized run summaries (incl. token use) | `artifact/sanitized-runs/` |
-| IoT Virtual Lab configuration | `artifact/iot-virtual-lab/` (full lab: https://github.com/Adelsamir01/iot_vlab) |
+| IoT Virtual Lab configuration | `artifact/iot-virtual-lab/` (full lab: https://github.com/Adelsamir01/iot_vlab , revision `0bb2d40`) |
 
 Both prompt conditions share the same mission lifecycle, safety constraints, termination tokens, verification requirements, and tool roster. The blind prompt removes protocol-specific exploit examples only.
