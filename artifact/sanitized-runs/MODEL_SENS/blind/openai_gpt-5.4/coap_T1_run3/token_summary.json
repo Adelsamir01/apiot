@@ -1,0 +1,138 @@
+{
+  "n_tool_events": 16,
+  "n_positive_token_logs": 16,
+  "token_count_min": 5219,
+  "token_count_max": 8300,
+  "token_count_mean": 6728.3125,
+  "per_event": [
+    {
+      "turn_number": 1,
+      "tool_name": "inspect_lab",
+      "token_count": 5219,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 1,
+      "tool_name": "get_actionable_targets",
+      "token_count": 5219,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 2,
+      "tool_name": "run_command",
+      "token_count": 5681,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 3,
+      "tool_name": "coap_send",
+      "token_count": 5833,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 4,
+      "tool_name": "verify_crash",
+      "token_count": 5926,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 5,
+      "tool_name": "modbus_request",
+      "token_count": 6507,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 5,
+      "tool_name": "tcp_send",
+      "token_count": 6507,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 5,
+      "tool_name": "iptables_rule",
+      "token_count": 6507,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 6,
+      "tool_name": "coap_send",
+      "token_count": 6821,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 7,
+      "tool_name": "verify_crash",
+      "token_count": 6951,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 8,
+      "tool_name": "iptables_rule",
+      "token_count": 7355,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 9,
+      "tool_name": "verify_patch",
+      "token_count": 7394,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 10,
+      "tool_name": "iptables_rule",
+      "token_count": 7682,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 11,
+      "tool_name": "verify_patch",
+      "token_count": 7788,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 12,
+      "tool_name": "protocol_block",
+      "token_count": 7963,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 13,
+      "tool_name": "list_patches",
+      "token_count": 8300,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "strategy_refresh"
+    }
+  ],
+  "notes": "Sanitized export from evaluation-host memory.db tool_history.token_count (character-count based estimates as described in the paper)."
+}

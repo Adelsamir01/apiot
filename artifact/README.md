@@ -1,25 +1,26 @@
 # APIOT artifact package
 
-This folder is the reviewer-facing package for the *Computers & Security* submission on **APIOT (Autonomous Purple-teaming for Industrial OT)**.
+Reviewer package for the *Computers & Security* submission on **APIOT (Autonomous Purple-teaming for Industrial OT)**.
 
-## Contents
+## Artifact release contents (as stated in the paper)
 
-| Path | What reviewers get |
+| Claimed content | Location |
 |---|---|
-| [`prompts/`](prompts/) | Guided and blind system prompts (plain text) |
-| [`schemas/`](schemas/) | The 21 JSON tool schemas exposed to the model |
-| [`sanitized-runs/`](sanitized-runs/) | Sanitized per-run summaries (`run_result.json`, `attack_log.json`) |
-| [`tables/`](tables/) | Run index and batch-level success summary (CSV) |
-| [`analysis-notes/`](analysis-notes/) | Written summaries of evaluation campaigns |
-| [`EXPERIMENT_RUNNER.md`](EXPERIMENT_RUNNER.md) | How `scripts/run_experiment.py` configures blind mode and overseer arms |
-| [`ETHICS_AND_ISOLATION.md`](ETHICS_AND_ISOLATION.md) | Isolation constraints matching the paper’s ethics section |
+| APIOT code | Repository root (`core/`, `toolkit/`, `tests/`, …) |
+| IoT Virtual Lab configuration | [`iot-virtual-lab/`](iot-virtual-lab/) |
+| Prompt definitions | [`prompts/`](prompts/) |
+| JSON tool schemas | [`schemas/`](schemas/) |
+| Analysis scripts | [`../scripts/analysis/`](../scripts/analysis/) |
+| Sanitized run summaries | [`sanitized-runs/`](sanitized-runs/) (incl. token summaries) |
 
-Implementation sources remain in the repository root (`core/`, `toolkit/`, `tests/`). Companion testbed: [iot_vlab](https://github.com/Adelsamir01/iot_vlab) (IoT Virtual Lab).
+Excluded: API keys, local host credentials, and environment-specific secrets.
 
-## Suggested reading order
+## Suggested inspection order
 
 1. `prompts/` and `schemas/` — what the model saw and could call  
-2. `tables/run_index.csv` — inventory of packaged runs  
-3. `sanitized-runs/` — inspect individual outcomes  
-4. `core/oversight.py` and `core/compaction.py` — governance and context management  
-5. `scripts/analysis/` — scripts used to aggregate metrics from run summaries  
+2. `sanitized-runs/*/token_summary.json` — token-use logs  
+3. `sanitized-runs/*/run_result.json` — mission outcomes  
+4. `core/oversight.py`, `core/compaction.py` — governance and context management  
+5. `iot-virtual-lab/` — lab configuration used with the companion testbed  
+
+Companion full lab repository: https://github.com/Adelsamir01/iot_vlab

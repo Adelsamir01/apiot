@@ -1,0 +1,186 @@
+{
+  "n_tool_events": 22,
+  "n_positive_token_logs": 22,
+  "token_count_min": 6670,
+  "token_count_max": 15561,
+  "token_count_mean": 11414.227272727272,
+  "per_event": [
+    {
+      "turn_number": 1,
+      "tool_name": "inspect_lab",
+      "token_count": 6670,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 1,
+      "tool_name": "get_network_state",
+      "token_count": 6670,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 1,
+      "tool_name": "get_actionable_targets",
+      "token_count": 6670,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 2,
+      "tool_name": "modbus_request",
+      "token_count": 7529,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 3,
+      "tool_name": "modbus_request",
+      "token_count": 7758,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 4,
+      "tool_name": "run_command",
+      "token_count": 7864,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 5,
+      "tool_name": "create_tool",
+      "token_count": 9267,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 6,
+      "tool_name": "run_command",
+      "token_count": 10173,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 7,
+      "tool_name": "verify_crash",
+      "token_count": 10781,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 8,
+      "tool_name": "run_command",
+      "token_count": 11048,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 9,
+      "tool_name": "modbus_request",
+      "token_count": 10979,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 10,
+      "tool_name": "create_tool",
+      "token_count": 12062,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 11,
+      "tool_name": "verify_crash",
+      "token_count": 12848,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 12,
+      "tool_name": "modbus_request",
+      "token_count": 13269,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 13,
+      "tool_name": "verify_crash",
+      "token_count": 13478,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 14,
+      "tool_name": "run_command",
+      "token_count": 13470,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 15,
+      "tool_name": "create_tool",
+      "token_count": 14359,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 16,
+      "tool_name": "inspect_lab",
+      "token_count": 14672,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 17,
+      "tool_name": "iptables_rule",
+      "token_count": 15212,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 18,
+      "tool_name": "run_command",
+      "token_count": 15551,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 19,
+      "tool_name": "verify_patch",
+      "token_count": 15222,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 20,
+      "tool_name": "list_patches",
+      "token_count": 15561,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    }
+  ],
+  "notes": "Sanitized export from evaluation-host memory.db tool_history.token_count (character-count based estimates as described in the paper)."
+}

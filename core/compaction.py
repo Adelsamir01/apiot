@@ -2,6 +2,11 @@
 
 Provides lightweight token estimation, conversation compaction when context
 exceeds budget, and tool-result truncation for conversation history.
+
+The agent loop (core/agent.py) invokes compact_messages() when estimated
+context use exceeds 70% of get_context_budget(model). Compaction keeps the
+system prompt and the latest eight messages, replaces the middle history with
+a structured summary, and truncates large tool outputs to 2,000 characters.
 """
 
 import json

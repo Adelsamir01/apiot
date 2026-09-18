@@ -1,0 +1,114 @@
+{
+  "n_tool_events": 13,
+  "n_positive_token_logs": 13,
+  "token_count_min": 6751,
+  "token_count_max": 10053,
+  "token_count_mean": 8444.0,
+  "per_event": [
+    {
+      "turn_number": 1,
+      "tool_name": "inspect_lab",
+      "token_count": 6751,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 1,
+      "tool_name": "get_network_state",
+      "token_count": 6751,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 2,
+      "tool_name": "get_actionable_targets",
+      "token_count": 7304,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 3,
+      "tool_name": "coap_send",
+      "token_count": 7585,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 4,
+      "tool_name": "coap_send",
+      "token_count": 7977,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 5,
+      "tool_name": "coap_send",
+      "token_count": 8377,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 5,
+      "tool_name": "run_command",
+      "token_count": 8377,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 6,
+      "tool_name": "verify_crash",
+      "token_count": 8723,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 7,
+      "tool_name": "run_command",
+      "token_count": 9009,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "phase_enforce"
+    },
+    {
+      "turn_number": 8,
+      "tool_name": "iptables_rule",
+      "token_count": 9646,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 9,
+      "tool_name": "run_command",
+      "token_count": 9576,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 10,
+      "tool_name": "verify_patch",
+      "token_count": 9643,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 11,
+      "tool_name": "list_patches",
+      "token_count": 10053,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    }
+  ],
+  "notes": "Sanitized export from evaluation-host memory.db tool_history.token_count (character-count based estimates as described in the paper)."
+}

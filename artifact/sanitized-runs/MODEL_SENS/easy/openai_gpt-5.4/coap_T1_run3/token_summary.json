@@ -1,0 +1,154 @@
+{
+  "n_tool_events": 18,
+  "n_positive_token_logs": 18,
+  "token_count_min": 5947,
+  "token_count_max": 10518,
+  "token_count_mean": 8369.444444444445,
+  "per_event": [
+    {
+      "turn_number": 1,
+      "tool_name": "inspect_lab",
+      "token_count": 5947,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 1,
+      "tool_name": "get_actionable_targets",
+      "token_count": 5947,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 2,
+      "tool_name": "get_network_state",
+      "token_count": 6381,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 3,
+      "tool_name": "coap_send",
+      "token_count": 7020,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 4,
+      "tool_name": "coap_send",
+      "token_count": 7218,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 5,
+      "tool_name": "modbus_request",
+      "token_count": 7727,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 5,
+      "tool_name": "tcp_send",
+      "token_count": 7727,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 5,
+      "tool_name": "mqtt_publish",
+      "token_count": 7727,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 6,
+      "tool_name": "verify_crash",
+      "token_count": 7965,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 7,
+      "tool_name": "run_command",
+      "token_count": 8189,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 8,
+      "tool_name": "run_command",
+      "token_count": 8632,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 9,
+      "tool_name": "iptables_rule",
+      "token_count": 9493,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 10,
+      "tool_name": "verify_patch",
+      "token_count": 9713,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 11,
+      "tool_name": "iptables_rule",
+      "token_count": 9770,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 12,
+      "tool_name": "verify_patch",
+      "token_count": 9926,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 13,
+      "tool_name": "coap_send",
+      "token_count": 10330,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 14,
+      "tool_name": "verify_crash",
+      "token_count": 10420,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 15,
+      "tool_name": "list_patches",
+      "token_count": 10518,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    }
+  ],
+  "notes": "Sanitized export from evaluation-host memory.db tool_history.token_count (character-count based estimates as described in the paper)."
+}

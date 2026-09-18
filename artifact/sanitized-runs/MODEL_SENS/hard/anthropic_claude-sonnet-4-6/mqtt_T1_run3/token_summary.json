@@ -1,0 +1,538 @@
+{
+  "n_tool_events": 66,
+  "n_positive_token_logs": 66,
+  "token_count_min": 8597,
+  "token_count_max": 41456,
+  "token_count_mean": 24936.515151515152,
+  "per_event": [
+    {
+      "turn_number": 1,
+      "tool_name": "inspect_lab",
+      "token_count": 8597,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 1,
+      "tool_name": "get_actionable_targets",
+      "token_count": 8597,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 2,
+      "tool_name": "get_network_state",
+      "token_count": 9394,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 2,
+      "tool_name": "run_command",
+      "token_count": 9394,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 3,
+      "tool_name": "run_command",
+      "token_count": 10486,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 4,
+      "tool_name": "mqtt_subscribe",
+      "token_count": 11980,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 4,
+      "tool_name": "mqtt_subscribe",
+      "token_count": 11980,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 5,
+      "tool_name": "mqtt_publish",
+      "token_count": 12813,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 5,
+      "tool_name": "run_command",
+      "token_count": 12813,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 6,
+      "tool_name": "mqtt_subscribe",
+      "token_count": 13393,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 6,
+      "tool_name": "run_command",
+      "token_count": 13393,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 7,
+      "tool_name": "mqtt_publish",
+      "token_count": 14867,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 7,
+      "tool_name": "run_command",
+      "token_count": 14867,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 8,
+      "tool_name": "mqtt_subscribe",
+      "token_count": 15490,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 8,
+      "tool_name": "run_command",
+      "token_count": 15490,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 9,
+      "tool_name": "remote_exec",
+      "token_count": 16054,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 9,
+      "tool_name": "remote_exec",
+      "token_count": 16054,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 10,
+      "tool_name": "mqtt_publish",
+      "token_count": 17238,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 10,
+      "tool_name": "remote_exec",
+      "token_count": 17238,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 11,
+      "tool_name": "remote_exec",
+      "token_count": 17869,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 11,
+      "tool_name": "mqtt_subscribe",
+      "token_count": 17869,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 12,
+      "tool_name": "mqtt_publish",
+      "token_count": 18700,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 13,
+      "tool_name": "mqtt_subscribe",
+      "token_count": 19449,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 13,
+      "tool_name": "verify_crash",
+      "token_count": 19449,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 14,
+      "tool_name": "remote_exec",
+      "token_count": 20988,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "phase_enforce"
+    },
+    {
+      "turn_number": 14,
+      "tool_name": "remote_exec",
+      "token_count": 20988,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 15,
+      "tool_name": "remote_exec",
+      "token_count": 22039,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 16,
+      "tool_name": "run_command",
+      "token_count": 22772,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 16,
+      "tool_name": "remote_exec",
+      "token_count": 22772,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 17,
+      "tool_name": "remote_exec",
+      "token_count": 23639,
+      "mission_phase": "red",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 18,
+      "tool_name": "remote_exec",
+      "token_count": 23888,
+      "mission_phase": "red",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 19,
+      "tool_name": "iptables_rule",
+      "token_count": 24279,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 20,
+      "tool_name": "mqtt_publish",
+      "token_count": 25651,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 20,
+      "tool_name": "run_command",
+      "token_count": 25651,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 20,
+      "tool_name": "create_tool",
+      "token_count": 25651,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 21,
+      "tool_name": "remote_exec",
+      "token_count": 26951,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 22,
+      "tool_name": "remote_exec",
+      "token_count": 27123,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 23,
+      "tool_name": "remote_exec",
+      "token_count": 27683,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 24,
+      "tool_name": "remote_exec",
+      "token_count": 28024,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 25,
+      "tool_name": "verify_patch",
+      "token_count": 28341,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 26,
+      "tool_name": "run_command",
+      "token_count": 28688,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 27,
+      "tool_name": "verify_patch",
+      "token_count": 29003,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 28,
+      "tool_name": "mqtt_subscribe",
+      "token_count": 29669,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 28,
+      "tool_name": "remote_exec",
+      "token_count": 29669,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 29,
+      "tool_name": "remote_exec",
+      "token_count": 30186,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 30,
+      "tool_name": "remote_exec",
+      "token_count": 30663,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 31,
+      "tool_name": "remote_exec",
+      "token_count": 30838,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 32,
+      "tool_name": "mqtt_publish",
+      "token_count": 32755,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 32,
+      "tool_name": "run_command",
+      "token_count": 32755,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 32,
+      "tool_name": "create_tool",
+      "token_count": 32755,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 33,
+      "tool_name": "mqtt_subscribe",
+      "token_count": 34225,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 33,
+      "tool_name": "list_patches",
+      "token_count": 34225,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 34,
+      "tool_name": "remote_exec",
+      "token_count": 35021,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 35,
+      "tool_name": "mqtt_subscribe",
+      "token_count": 35301,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 36,
+      "tool_name": "remote_exec",
+      "token_count": 35591,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 37,
+      "tool_name": "remote_exec",
+      "token_count": 36052,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 38,
+      "tool_name": "remote_exec",
+      "token_count": 36264,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 39,
+      "tool_name": "mqtt_publish",
+      "token_count": 36978,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 39,
+      "tool_name": "run_command",
+      "token_count": 36978,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 39,
+      "tool_name": "mqtt_subscribe",
+      "token_count": 36978,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 40,
+      "tool_name": "verify_patch",
+      "token_count": 38578,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 41,
+      "tool_name": "mqtt_subscribe",
+      "token_count": 38972,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 42,
+      "tool_name": "mqtt_publish",
+      "token_count": 40039,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "strategy_refresh"
+    },
+    {
+      "turn_number": 44,
+      "tool_name": "run_command",
+      "token_count": 40801,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 45,
+      "tool_name": "list_patches",
+      "token_count": 41456,
+      "mission_phase": "blue",
+      "success": false,
+      "overseer_flag": "none"
+    },
+    {
+      "turn_number": 45,
+      "tool_name": "remote_exec",
+      "token_count": 41456,
+      "mission_phase": "blue",
+      "success": true,
+      "overseer_flag": "none"
+    }
+  ],
+  "notes": "Sanitized export from evaluation-host memory.db tool_history.token_count (character-count based estimates as described in the paper)."
+}

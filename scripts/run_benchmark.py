@@ -225,7 +225,7 @@ def do_step(args) -> int:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="CURSOR-driven benchmark. operator reads output and runs again with --command."
+        description="Stepwise benchmark. operator reads output and runs again with --command."
     )
     parser.add_argument("--command", "-c", help="Command: attack <tool> <ip>, verify_crash <ip>, done")
     parser.add_argument("--scenario", default="all", help="Scenario id")
