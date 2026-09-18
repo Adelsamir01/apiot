@@ -18,6 +18,8 @@ The paper’s artifact release is organised under [`artifact/`](artifact/README.
 Paper ↔ source map: [`ARTIFACT.md`](ARTIFACT.md)
 
 Full IoT Virtual Lab repository: https://github.com/Adelsamir01/iot_vlab  
-Matched revision: `0bb2d40`## Licence
+Matched revision: `0bb2d40`
+
+## Licence
 
 MIT — see [LICENSE](LICENSE).
